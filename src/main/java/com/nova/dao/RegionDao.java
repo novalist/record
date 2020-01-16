@@ -41,7 +41,7 @@ public interface RegionDao {
   @AllArgsConstructor
   class SearchCondition {
     private Integer regionId;
-    private boolean regionType;
+    private Boolean regionType;
     private Integer parentId;
   }
 }

@@ -19,6 +19,18 @@ public class RegionServiceImpl implements RegionService {
   private RegionDao regionDao;
 
   @Override
+  public List<RegionBO> getRegionList(Integer regionId) {
+
+    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null));
+    regionList.forEach(
+        region -> {
+
+        }
+    );
+    return null;
+  }
+
+  @Override
   public List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId) {
     return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId));
   }

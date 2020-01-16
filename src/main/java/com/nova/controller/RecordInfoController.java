@@ -163,6 +163,16 @@ public class RecordInfoController {
   }
 
   /**
+   * 照片路径
+   *
+   * @return
+   */
+  @RequestMapping("photo/path/get")
+  public Object showPhotos(){
+    return CommonReturnVO.suc(path);
+  }
+
+  /**
    * 导出
    *
    * @param regionId

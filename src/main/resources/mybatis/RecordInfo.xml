@@ -31,11 +31,7 @@
     from record.record_info ri
     left join record.region r1 on ri.region_id = r1.region_id
     left join record.region r2 on ri.district_id = r2.region_id
-    <where>
-      <if test="id != null and id != 0">
-        and ri.id = #{id}
-      </if>
-    </where>
+    where ri.id = #{id}
   </select>
 
   <select id="selectByCondition" parameterType="com.nova.dao.RecordInfoDao$SearchCondition" resultMap="BaseResultMap">
