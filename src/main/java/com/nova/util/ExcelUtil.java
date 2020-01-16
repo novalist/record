@@ -318,29 +318,6 @@ public class ExcelUtil {
         writer.finish();
     }
 
-    /**
-     * 使用模型（部分字段） 来写入Excel 多sheet写入
-     *
-     * @param path          文件路径
-     * @param sheetDateList sheet列表
-     */
-    public static void writeExcelWithMultipleSheetModel(String path, List<SheetDateModel> sheetDateList) throws FileNotFoundException {
-        OutputStream outputStream = new FileOutputStream(path);
-        ExcelWriter writer = new ExcelWriter(outputStream, ExcelTypeEnum.XLSX, false);
-        int i = 1;
-        for (SheetDateModel sheetDateModel : sheetDateList) {
-            List<String> fieldList = sheetDateModel.getFieldList();
-            Class<? extends BaseRowModel> clazz = sheetDateModel.getClazz();
-            List<? extends BaseRowModel> data = sheetDateModel.getData();
-            List<List<String>> writeData = getWriteDate(fieldList, clazz, data);
-            //这里指定需要表头，因为model通常包含表头信息
-            //写第一个sheet, sheet1  数据全是List<String> 无模型映射关系
-            Sheet sheet = new Sheet(i++, 0);
-            sheet.setSheetName(sheetDateModel.getSheetName());
-            writer.write0(writeData, sheet);
-        }
-        writer.finish();
-    }
 
     private static List<List<String>> getWriteDate(List<String> fieldList, Class<? extends BaseRowModel> clazz, List<? extends BaseRowModel> data) {
         List<List<String>> writeData = new ArrayList<>();

@@ -28,7 +28,17 @@ spring:
         pool-name: DatebookHikariCP
 
 
+
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+multipart:
+  maxFileSize: 50Mb
+  maxRequestSize: 50Mb
+
+# 自定义文件上传路径
+web:
+  upload-path: /Users/listnova/photo
