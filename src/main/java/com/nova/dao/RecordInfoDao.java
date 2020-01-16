@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author hzhang1
@@ -36,7 +37,7 @@ public interface RecordInfoDao {
    * @param id
    * @return
    */
-  RecordInfo selectById(Integer id);
+  RecordInfo selectById(@Param("id") Integer id);
 
   /**
    * 查询

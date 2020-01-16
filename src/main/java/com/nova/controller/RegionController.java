@@ -25,4 +25,9 @@ public class RegionController {
     return CommonReturnVO.suc(regionService.getRegionList(regionId,regionType,parentId));
   }
 
+  @RequestMapping("/get/list")
+  public Object getInfo(@RequestParam(value = "regionId",required = false) Integer regionId){
+    return CommonReturnVO.suc(regionService.getRegionList(regionId));
+  }
+
 }
