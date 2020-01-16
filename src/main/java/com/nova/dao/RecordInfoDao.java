@@ -31,6 +31,14 @@ public interface RecordInfoDao {
   int update(RecordInfo recordInfo);
 
   /**
+   * 按id查找
+   *
+   * @param id
+   * @return
+   */
+  RecordInfo selectById(Integer id);
+
+  /**
    * 查询
    *
    * @param searchCondition 条件

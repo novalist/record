@@ -11,6 +11,9 @@ import java.util.List;
  */
 public interface RecordInfoService {
 
+
+  RecordInfo selectById(Integer id);
+
   /**
    * 获得记录信息列表
    *

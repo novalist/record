@@ -24,6 +24,20 @@
     id, company_name, ri.region_id, r1.region_name, ri.district_id, r2.region_name as district_name, master_name, master_phone,
     slave_name, slave_phone, address , resource , note , photos , ri.is_delete , created_time , last_updated_time
   </sql>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from record.record_info ri
+    left join record.region r1 on ri.region_id = r1.region_id
+    left join record.region r2 on ri.district_id = r2.region_id
+    <where>
+      <if test="id != null and id != 0">
+        and ri.id = #{id}
+      </if>
+    </where>
+  </select>
+
   <select id="selectByCondition" parameterType="com.nova.dao.RecordInfoDao$SearchCondition" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
