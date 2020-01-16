@@ -7,7 +7,6 @@ import com.nova.util.CommonReturnVO;
 import com.nova.util.ExcelUtil;
 import com.nova.util.FileUtil;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -39,17 +38,9 @@ public class RecordInfoController {
     return CommonReturnVO.suc(recordInfoService.getRecordInfoList(regionId,districtId,key));
   }
 
-  @RequestMapping("/upload")
-  public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
-
-    List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
-
-    return null;
-  }
-
-  @RequestMapping("/img/upload")
-  public Object uploadImg(@RequestParam("uploadFile") CommonsMultipartFile file){
-    return null;
+  @RequestMapping("/insert")
+  public Object insert(@RequestBody RecordInfo recordInfo){
+    return recordInfoService.insert(recordInfo);
   }
 
   @RequestMapping("/update")
@@ -61,6 +52,19 @@ public class RecordInfoController {
   public Object delete(@RequestBody RecordInfo recordInfo){
     recordInfo.setDelete(true);
     return recordInfoService.update(recordInfo);
+  }
+
+  @RequestMapping("/upload")
+  public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
+
+    List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
+    recordInfoService.importRecordInfoList(recordInfoList);
+    return CommonReturnVO.suc();
+  }
+
+  @RequestMapping("/img/upload")
+  public Object uploadImg(@RequestParam("uploadFile") CommonsMultipartFile file){
+    return null;
   }
 
   @RequestMapping("/export")

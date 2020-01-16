@@ -1,0 +1,24 @@
+logs/
+target/
+work/
+classes/
+
+# java build
+*.class
+build
+
+# config
+.editorconfig
+
+
+# eclipse
+.settings
+.classpath
+.project
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+

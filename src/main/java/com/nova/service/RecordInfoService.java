@@ -21,6 +21,9 @@ public interface RecordInfoService {
    */
   List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key);
 
+  void importRecordInfoList(List<RecordInfo> recordInfoList);
+
+
   /**
    *
    * @param recordInfo

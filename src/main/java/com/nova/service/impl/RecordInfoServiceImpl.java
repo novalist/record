@@ -24,6 +24,13 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   }
 
   @Override
+  public void importRecordInfoList(List<RecordInfo> recordInfoList) {
+    for(RecordInfo recordInfo : recordInfoList){
+      recordInfoDao.insert(recordInfo);
+    }
+  }
+
+  @Override
   public int insert(RecordInfo recordInfo) {
     return recordInfoDao.insert(recordInfo);
   }

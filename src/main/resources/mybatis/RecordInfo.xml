@@ -53,6 +53,11 @@
     )
     values (#{id}, #{companyName}, #{regionId}, #{districtId}, #{masterName}, #{masterPhone},
     #{slaveName}, #{slavePhone}, #{address} , #{resource} ,#{note} , #{photos} , #{delete} , #{createdTime} ,  now())
+    ON DUPLICATE KEY UPDATE
+    masterName = #{masterName}, masterPhone = #{masterPhone},
+    slaveName = #{slaveName}, slavePhone = #{slavePhone}, address = #{address} , resource = #{resource} ,
+    note = #{note} ,
+    last_updated_time = #{last_updated_time}
   </insert>
 
   <update id="update" parameterType="com.nova.entity.RecordInfo">
