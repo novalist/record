@@ -16,7 +16,7 @@
     <include refid="Base_Column_List" />
     from record.region
     <where>
-      <if test="regionId != null">
+      <if test="regionId != null and regionId != 0">
         and region_id = #{regionId}
       </if>
       <if test="regionType != null">

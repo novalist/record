@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 /**
+ * 区域管理 Impl
+ *
  * @author hzhang1
  * @date 2020-01-14
  */
@@ -37,14 +39,14 @@ public class RegionServiceImpl implements RegionService {
       if(region.getRegionType() == 0) continue;
 
       List<Region> tempRegionList = null;
-      if(regionMap.containsKey(region.getRegionId())){
-        tempRegionList = regionMap.get(region.getRegionId());
+      if(regionMap.containsKey(region.getParentId())){
+        tempRegionList = regionMap.get(region.getParentId());
         tempRegionList.add(region);
       }else {
         tempRegionList = new ArrayList<>();
         tempRegionList.add(region);
       }
-      regionMap.put(region.getRegionId(), tempRegionList);
+      regionMap.put(region.getParentId(), tempRegionList);
     }
 
     regions.forEach(

@@ -124,14 +124,11 @@ public class RecordInfoController {
   public Object uploadPhoto(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "id") Integer id) throws IOException {
 
-    // 要上传的目标文件存放路径
     String localPath = path;
-    // 上传成功或者失败的提示
     String msg = "";
 
     String fileName = id + "_" +file.getOriginalFilename();
     if (ImageUtil.upload(file, localPath, fileName)){
-      // 上传成功，给出页面提示
       msg = "上传成功！";
 
       RecordInfo recordInfo = recordInfoService.selectById(id);
@@ -192,7 +189,7 @@ public class RecordInfoController {
 
     String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(""))
         .getPath() + "static/upload/";
-    String fileName = "test";
+    String fileName = "资源管理";
 
     // 全部字段导出
     ExcelUtil.writeExcelWithModel(path + fileName + ExcelTypeEnum.XLSX.getValue(), recordInfoList ,ExcelTypeEnum.XLSX, RecordInfo.class);

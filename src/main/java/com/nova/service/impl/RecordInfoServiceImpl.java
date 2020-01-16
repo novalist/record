@@ -9,11 +9,12 @@ import com.nova.service.RecordInfoService;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * 资源管理
+ *
  * @author hzhang1
  * @date 2020-01-14
  */
