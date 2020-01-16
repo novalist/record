@@ -169,7 +169,7 @@ public class RecordInfoController {
    */
   @RequestMapping("photo/path/get")
   public Object showPhotos(){
-    return CommonReturnVO.suc(path);
+    return CommonReturnVO.suc(path,"success");
   }
 
   /**
