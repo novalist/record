@@ -17,12 +17,12 @@ public class RecordInfo extends BaseRowModel {
   @ExcelProperty(value = "企业")
   private String companyName;
 
-  private Short regionId;
+  private Integer regionId;
 
   @ExcelProperty(value = "区域")
   private String regionName;
 
-  private Short districtId;
+  private Integer districtId;
 
   @ExcelProperty(value = "街道")
   private String districtName;

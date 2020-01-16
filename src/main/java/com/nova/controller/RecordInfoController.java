@@ -110,8 +110,7 @@ public class RecordInfoController {
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
     List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
-    recordInfoService.importRecordInfoList(recordInfoList);
-    return CommonReturnVO.suc();
+    return CommonReturnVO.suc(recordInfoService.importRecordInfoList(recordInfoList));
   }
 
   /**

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 /**
  * @author hzhang1
@@ -25,7 +26,7 @@ public class RegionServiceImpl implements RegionService {
   @Override
   public List<RegionBO> getRegionList(Integer regionId) {
 
-    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null));
+    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null,null));
     List<RegionBO> regionBOList = new ArrayList<>(regionList.size());
     List<Region> regions = regionList.stream().filter(region -> region.getRegionType().equals(0))
         .collect(Collectors.toList());
@@ -61,20 +62,24 @@ public class RegionServiceImpl implements RegionService {
 
   @Override
   public List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId) {
-    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId));
+    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId,null));
   }
 
   @Override
   public int importRegionList(List<Region> regionList) {
 
+    int count = 0;
     for(Region region : regionList){
-      regionDao.insert(region);
+      count += insert(region);
     }
-    return 0;
+    return count;
   }
 
   @Override
   public int insert(Region region) {
+
+    Assert.notNull(region,"内容为空");
+    Assert.notNull(region.getRegionName(),"名称为空");
     return regionDao.insert(region);
   }
 

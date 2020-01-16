@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nova.dao.ProjectDao">
+  <resultMap id="BaseResultMap" type="com.nova.entity.Project">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="connect_name" jdbcType="VARCHAR" property="connectName" />
+    <result column="connect_phone" jdbcType="VARCHAR" property="connectPhone" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="is_delete" jdbcType="TINYINT" property="delete"/>
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="last_updated_time" jdbcType="TIMESTAMP" property="lastUpdatedTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, company_name, connect_name,connect_phone,area,content,detail,is_delete , created_time , last_updated_time
+  </sql>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from record.project
+    where id = #{id}
+  </select>
+
+  <select id="selectByCondition" parameterType="com.nova.dao.ProjectDao$SearchCondition" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from record.project
+    <where>
+      <if test="id != null and id != 0">
+        and id = #{id}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insert" parameterType="com.nova.entity.RecordInfo">
+    <selectKey resultType="java.lang.Integer" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into record.project (
+      id, company_name, connect_name,connect_phone,area,content,detail,is_delete , created_time , last_updated_time
+    )
+    values (#{id}, #{companyName}, #{connectName}, #{connectPhone}, #{area}, #{content},
+    #{detail},  #{delete} , #{createdTime} ,  now())
+    ON DUPLICATE KEY UPDATE
+    company_name = #{companyName}, connect_name = #{connectName},
+    connect_phone = #{connectPhone}, area = #{area}, content = #{content} ,
+    last_updated_time = now()
+  </insert>
+
+  <update id="update" parameterType="com.nova.entity.RecordInfo">
+    update record.project
+    <set>
+      <if test="companyName != null">
+        company_name = #{companyName},
+      </if>
+      <if test="connectName != null">
+        connect_name = #{connectName},
+      </if>
+      <if test="connectPhone != null">
+        connect_phone = #{connectPhone},
+      </if>
+      <if test="area != null">
+        area = #{area},
+      </if>
+      <if test="content != null">
+        content = #{content},
+      </if>
+      <if test="delete != null">
+        is_delete = #{delete},
+      </if>
+      last_updated_time = now()
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

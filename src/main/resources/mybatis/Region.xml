@@ -25,6 +25,9 @@
       <if test="parentId != null">
         and parent_id = #{parentId}
       </if>
+      <if test="regionName != null">
+        and region_name = #{regionName}
+      </if>
     </where>
   </select>
 
