@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -121,21 +122,27 @@ public class RecordInfoController {
    * @throws IOException
    */
   @RequestMapping("/photo/upload")
-  public Object uploadPhoto(@RequestParam("file") MultipartFile file) throws IOException {
+  public Object uploadPhoto(@RequestParam("file") MultipartFile file,
+      @RequestParam(value = "id") Integer id) throws IOException {
 
     // 要上传的目标文件存放路径
     String localPath = path;
     // 上传成功或者失败的提示
     String msg = "";
 
-    if (ImageUtil.upload(file, localPath, file.getOriginalFilename())){
+    String fileName = id + "_" +file.getOriginalFilename();
+    if (ImageUtil.upload(file, localPath, fileName)){
       // 上传成功，给出页面提示
       msg = "上传成功！";
+
+      RecordInfo recordInfo = recordInfoService.selectById(id);
+      recordInfo.setPhotos(StringUtils.hasText(recordInfo.getPhotos()) ? recordInfo.getPhotos() + "," +fileName : fileName );
+      recordInfoService.update(recordInfo);
     }else {
       msg = "上传失败！";
     }
 
-    return CommonReturnVO.suc(msg);
+    return CommonReturnVO.suc(fileName , msg);
   }
 
   /**

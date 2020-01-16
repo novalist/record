@@ -19,6 +19,11 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   private RecordInfoDao recordInfoDao;
 
   @Override
+  public RecordInfo selectById(Integer id) {
+    return recordInfoDao.selectById(id);
+  }
+
+  @Override
   public List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key) {
     return recordInfoDao.selectByCondition(new SearchCondition(regionId,districtId,key));
   }
