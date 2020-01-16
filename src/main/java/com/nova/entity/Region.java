@@ -1,5 +1,7 @@
 package com.nova.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.metadata.BaseRowModel;
 import lombok.Data;
 
 /**
@@ -7,17 +9,17 @@ import lombok.Data;
  * @date 2020-01-14
  */
 @Data
-public class Region {
+public class Region extends BaseRowModel {
 
   /**
    * 主键id
    */
-  private Short regionId;
+  private Integer regionId;
 
   /**
    * 父区域ID，如市所属省
    */
-  private Short parentId;
+  private Integer parentId;
 
   /**
    * 区域名称
@@ -27,7 +29,7 @@ public class Region {
   /**
    * 区域类别，记录区域的等级
    */
-  private Byte regionType;
+  private Integer regionType;
 
   /**
    * 是否删除
