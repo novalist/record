@@ -1,26 +1,33 @@
 package com.nova.controller;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.nova.entity.RecordInfo;
 import com.nova.service.RecordInfoService;
+import com.nova.util.CommonReturnPageVO;
 import com.nova.util.CommonReturnVO;
 import com.nova.util.ExcelUtil;
 import com.nova.util.FileUtil;
+import com.nova.util.ImageUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
+ * 资源管理
+ *
  * @author hzhang1
  * @date 2020-01-14
  */
@@ -31,29 +38,73 @@ public class RecordInfoController {
   @Resource
   private RecordInfoService recordInfoService;
 
+  @Resource
+  private ResourceLoader resourceLoader;
+
+  @Value("${web.upload-path}")
+  private String path;
+
+  /**
+   *
+   * @param regionId
+   * @param districtId
+   * @param key
+   * @return
+   */
   @RequestMapping("/get/info")
-  public Object getInfo(@RequestParam(value = "regionId",required = false) Integer regionId,
-                        @RequestParam(value = "districtId",required = false) Integer districtId,
-                        @RequestParam(value = "key",required = false) String key) {
-    return CommonReturnVO.suc(recordInfoService.getRecordInfoList(regionId,districtId,key));
+  public Object getInfo(@RequestParam(value = "regionId", required = false) Integer regionId,
+      @RequestParam(value = "districtId", required = false) Integer districtId,
+      @RequestParam(value = "key", required = false) String key,
+      @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+      @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
+
+    Page<RecordInfo> page = PageHelper.startPage(pageNum,pageSize);
+    List<RecordInfo> recordInfoList = recordInfoService
+        .getRecordInfoList(regionId, districtId, key);
+    return CommonReturnVO.suc(CommonReturnPageVO.get(page,recordInfoList));
   }
 
+  /**
+   * 新建
+   *
+   * @param recordInfo
+   * @return
+   */
   @RequestMapping("/insert")
   public Object insert(@RequestBody RecordInfo recordInfo){
-    return recordInfoService.insert(recordInfo);
+    return CommonReturnVO.suc(recordInfoService.insert(recordInfo));
   }
 
+  /**
+   * 更新
+   *
+   * @param recordInfo
+   * @return
+   */
   @RequestMapping("/update")
   public Object update(@RequestBody RecordInfo recordInfo){
     return recordInfoService.update(recordInfo);
   }
 
+  /**
+   * 删除
+   *
+   * @param recordInfo
+   * @return
+   */
   @RequestMapping("/delete")
   public Object delete(@RequestBody RecordInfo recordInfo){
     recordInfo.setDelete(true);
     return recordInfoService.update(recordInfo);
   }
 
+  /**
+   * 导入文件
+   *
+   * @param file
+   * @return
+   * @throws IOException
+   */
   @RequestMapping("/upload")
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
@@ -62,16 +113,63 @@ public class RecordInfoController {
     return CommonReturnVO.suc();
   }
 
-  @RequestMapping("/img/upload")
-  public Object uploadImg(@RequestParam("uploadFile") CommonsMultipartFile file){
-    return null;
+  /**
+   * 照片上传
+   *
+   * @param file
+   * @return
+   * @throws IOException
+   */
+  @RequestMapping("/photo/upload")
+  public Object uploadPhoto(@RequestParam("file") MultipartFile file) throws IOException {
+
+    // 要上传的目标文件存放路径
+    String localPath = path;
+    // 上传成功或者失败的提示
+    String msg = "";
+
+    if (ImageUtil.upload(file, localPath, file.getOriginalFilename())){
+      // 上传成功，给出页面提示
+      msg = "上传成功！";
+    }else {
+      msg = "上传失败！";
+    }
+
+    return CommonReturnVO.suc(msg);
   }
 
+  /**
+   * 照片展示
+   *
+   * @param fileName
+   * @return
+   */
+  @RequestMapping("show")
+  public ResponseEntity showPhotos(String fileName){
+
+    try {
+      // 由于是读取本机的文件，file是一定要加上的， path是在application配置文件中的路径
+      return ResponseEntity.ok(resourceLoader.getResource("file:" + path + fileName));
+    } catch (Exception e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  /**
+   * 导出
+   *
+   * @param regionId
+   * @param districtId
+   * @param key
+   * @param request
+   * @param response
+   * @throws IOException
+   */
   @RequestMapping("/export")
   public void export(@RequestParam(value = "regionId",required = false) Integer regionId,
       @RequestParam(value = "districtId",required = false) Integer districtId,
       @RequestParam(value = "key",required = false) String key,
-      HttpServletRequest request, HttpServletResponse response) throws IOException {
+      HttpServletResponse response) throws IOException {
 
     List<RecordInfo> recordInfoList = recordInfoService
         .getRecordInfoList(regionId, districtId, key);
