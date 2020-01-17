@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 区域管理
+ *
  * @author hzhang1
  * @date 2020-01-14
  */
@@ -35,7 +37,7 @@ public class RegionController {
     return CommonReturnVO.suc(regionService.getRegionList(regionId,regionType,parentId));
   }
 
-  @RequestMapping("/get/list")
+  @RequestMapping("/list")
   public Object getInfo(@RequestParam(value = "regionId",required = false) Integer regionId,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize){

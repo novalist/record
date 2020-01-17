@@ -11,8 +11,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 /**
+ * 区域管理 Impl
+ *
  * @author hzhang1
  * @date 2020-01-14
  */
@@ -25,7 +28,7 @@ public class RegionServiceImpl implements RegionService {
   @Override
   public List<RegionBO> getRegionList(Integer regionId) {
 
-    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null));
+    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null,null));
     List<RegionBO> regionBOList = new ArrayList<>(regionList.size());
     List<Region> regions = regionList.stream().filter(region -> region.getRegionType().equals(0))
         .collect(Collectors.toList());
@@ -36,14 +39,14 @@ public class RegionServiceImpl implements RegionService {
       if(region.getRegionType() == 0) continue;
 
       List<Region> tempRegionList = null;
-      if(regionMap.containsKey(region.getRegionId())){
-        tempRegionList = regionMap.get(region.getRegionId());
+      if(regionMap.containsKey(region.getParentId())){
+        tempRegionList = regionMap.get(region.getParentId());
         tempRegionList.add(region);
       }else {
         tempRegionList = new ArrayList<>();
         tempRegionList.add(region);
       }
-      regionMap.put(region.getRegionId(), tempRegionList);
+      regionMap.put(region.getParentId(), tempRegionList);
     }
 
     regions.forEach(
@@ -61,20 +64,24 @@ public class RegionServiceImpl implements RegionService {
 
   @Override
   public List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId) {
-    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId));
+    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId,null));
   }
 
   @Override
   public int importRegionList(List<Region> regionList) {
 
+    int count = 0;
     for(Region region : regionList){
-      regionDao.insert(region);
+      count += insert(region);
     }
-    return 0;
+    return count;
   }
 
   @Override
   public int insert(Region region) {
+
+    Assert.notNull(region,"内容为空");
+    Assert.notNull(region.getRegionName(),"名称为空");
     return regionDao.insert(region);
   }
 
