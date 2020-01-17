@@ -51,13 +51,16 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   public int insert(RecordInfo recordInfo) {
 
     Assert.notNull(recordInfo,"资源内容为空");
-    Assert.notNull(recordInfo.getRegionName(),"街道为空");
-    List<Region> regionList = regionDao.selectByCondition(new RegionDao.SearchCondition(recordInfo.getRegionName(),true));
-    Assert.isTrue(!CollectionUtils.isEmpty(regionList),"没有对应街道");
+    if(recordInfo.getDistrictId() == null) {
+      Assert.notNull(recordInfo.getRegionName(), "街道为空");
+      List<Region> regionList = regionDao
+          .selectByCondition(new RegionDao.SearchCondition(recordInfo.getRegionName(), true));
+      Assert.isTrue(!CollectionUtils.isEmpty(regionList), "没有对应街道");
 
-    Region region = regionList.get(0);
-    recordInfo.setDistrictId(region.getRegionId());
-    recordInfo.setRegionId(region.getParentId());
+      Region region = regionList.get(0);
+      recordInfo.setDistrictId(region.getRegionId());
+      recordInfo.setRegionId(region.getParentId());
+    }
     return recordInfoDao.insert(recordInfo);
   }
 
