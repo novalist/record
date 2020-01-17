@@ -4,7 +4,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.nova.entity.Region;
 import com.nova.service.RegionService;
-import com.nova.service.RegionService.RegionBO;
 import com.nova.util.CommonReturnPageVO;
 import com.nova.util.CommonReturnVO;
 import com.nova.util.ExcelUtil;
@@ -42,8 +41,8 @@ public class RegionController {
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize){
 
-    Page<RegionBO> page = PageHelper.startPage(pageNum,pageSize);
-    List<RegionBO> regionList = regionService.getRegionList(regionId);
+    Page<Region> page = PageHelper.startPage(pageNum,pageSize);
+    List<Region> regionList = regionService.getRegionList(regionId);
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,regionList));
   }
 

@@ -393,6 +393,7 @@
 				</thead>
 				<tbody class="tbody"></tbody>
 			</table>
+			<img src="../record_info/show?fileName=2.jpeg">
 		</div>
 
 		<div id="dialog-review-branch" class="xxx-dialog--wrapper" style="display: none;">

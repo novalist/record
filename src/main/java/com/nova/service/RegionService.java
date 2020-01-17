@@ -12,7 +12,7 @@ import lombok.Data;
  */
 public interface RegionService {
 
-  List<RegionBO> getRegionList(Integer regionId);
+  List<Region> getRegionList(Integer regionId);
 
   List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId);
 
@@ -22,11 +22,4 @@ public interface RegionService {
 
   int update(Region region);
 
-  @Data
-  class RegionBO {
-
-    private Region region;
-
-    private List<Region> regionList;
-  }
 }
