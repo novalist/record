@@ -8,43 +8,38 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/global.css">
-    <title>区域管理</title>
+    <title>项目管理</title>
     <style type="text/css">
         
     </style>
 </head>
 <body>
 <div id="main" v-if="isShow">
-    <h3>区域/街道管理</h3>
+    <h3>项目管理</h3>
     <el-form :inline="true" :model="formInline">
-        <el-form-item label="区域：" prop="regionId">
-            <el-select v-model="formInline.regionId" placeholder="区域">
-                <el-option label="全部" value=""></el-option>
-                <el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
-            </el-select>
+        <el-form-item label="负责人：" prop="masterName">
+            <el-input v-model="formInline.masterName" placeholder="负责人"></el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="search">搜索</el-button>
             <el-button type="primary" @click="importFile">导入</el-button>
-            <el-button type="primary" @click="newRecord">新建</el-button>
-            <el-button @click="getTemplateDownload('region')">模板下载</el-button>
+            <el-button @click="getTemplateDownload('project')">模板下载</el-button>
         </el-form-item>
     </el-form>
     <el-table :data="list" border>
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
-        <el-table-column prop="regionName" label="区域" width="240" ></el-table-column>
-        <el-table-column prop="districtName" label="街道">
-        	<template slot-scope="{ row }">
-              <div :class="row.districtList.length > 1 ? 'cell-line':''" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
-              	{{item.regionName}}
-              </div>
-            </template>
-        </el-table-column>
+        <el-table-column prop="companyName" label="企业" width="180" ></el-table-column>
+        <el-table-column prop="masterName" label="联系人" width="120" ></el-table-column>
+        <el-table-column prop="masterPhone" label="号码" width="120" ></el-table-column>
+        <el-table-column prop="address" label="意向区域" width="180"></el-table-column>
+        <el-table-column prop="resource" label="项目内容"></el-table-column>
+        <el-table-column prop="resource" label="跟进"></el-table-column>
         <el-table-column label="操作" width="120" >
             <template slot-scope="{ row }">
-            	<div :class="row.districtList.length > 1 ? 'cell-line':''" class="action-btn" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
-              	<a @click.stop="del(row, item)" class="red">删除</a>
-              </div>
+            	<div class="action-btn">
+                  	<a @click.stop="edit(row)">编辑</a>
+                    <a @click.stop="del(row)" class="red">删除</a>
+                </div>
             </template>
         </el-table-column>
     </el-table>
@@ -61,7 +56,7 @@
             return {
             	 isShow: false,
                 formInline: {
-                    regionId: ''
+                    masterName: ''
                 },
                 list: [],
                 regionList: [],
@@ -74,9 +69,11 @@
             this.isShow = true
         },
         methods: {
-        	  getTemplateDownload (params) {
-						    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
-						},
+            edit (row) {
+            },
+        	getTemplateDownload (params) {
+			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
+            },
             getSelectData () {
                 axiosGet(this.baseUrl + 'region/get/info')
                     .then(res => {
@@ -85,7 +82,7 @@
                     .catch(err => console.log(err))
             },
             del (row) {
-                axiosPostJSON(this.baseUrl + 'region/delete', { regionId: row.regionId })
+                axiosPostJSON(this.baseUrl + 'region/delete', { masterName: row.masterName })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
                         this.search()
@@ -104,9 +101,6 @@
                 }
             },
             importFile () {
-
-            },
-            newRecord () {
 
             }
         }

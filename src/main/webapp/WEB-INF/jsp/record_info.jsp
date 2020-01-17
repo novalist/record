@@ -7,11 +7,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/global.css">
     <title>资源管理</title>
     <style type="text/css">
-        .content {
-            padding: 10px;
-        }
         .add-form .el-form-item {
             margin-bottom: 15px;
         }
@@ -24,13 +22,6 @@
             top: 100px;
             width: 240px;
             height: 240px;
-        }
-        .action-btn {
-            color: #409EFF;
-            cursor: pointer;
-        }
-        .action-btn:hover {
-            opacity: 0.8;
         }
         .el-dialog__body {
             padding: 20px;
@@ -50,7 +41,7 @@
     </style>
 </head>
 <body>
-<div id="main" v-show="isShow">
+<div id="main" v-if="isShow">
     <h3>资源查询</h3>
     <el-form :inline="true" :model="formInline">
         <el-form-item label="区域：" prop="regionId">
@@ -99,55 +90,56 @@
                         <a>上传图片</a>
                     </el-upload>
                     <a @click.stop="edit(row)">编辑</a>
-                    <a @click.stop="del(row)">删除</a>
+                    <a @click.stop="del(row)" class="red">删除</a>
                 </div>
             </template>
         </el-table-column>
     </el-table>
-    <el-dialog
-        v-if="isShow"
-        :visible.sync="isOpenAddModal"
-        width="600px"
-        :before-close="handleClose">
-        <span slot="title">{{addModalTitle}}</span>
-        <div>
-            <span style="margin: 0 40px;">区域：{{currRow.regionName}}</span>
-            <span>街道：{{currRow.districtName}}</span>
-            <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" style="margin-top: 10px;" class="add-form">
-                <el-form-item label="企业" prop="companyName">
-                    <el-input v-model="modalForm.companyName" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="联系人" prop="masterName">
-                    <el-input v-model="modalForm.masterName" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="联系方式1" prop="masterPhone">
-                    <el-input v-model="modalForm.masterPhone" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="联系方式2" prop="slavePhone">
-                    <el-input v-model="modalForm.slavePhone" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="地址" prop="address">
-                    <el-input v-model="modalForm.address" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="备注" prop="note">
-                    <el-input v-model="modalForm.note" size="small"></el-input>
-                </el-form-item>
-            </el-form>
-            <div class="img-wrapper">
-                <div><img v-if="imgList.length > 0" :src="'/record/record_info/show?fileName=' + currImgUrl" width="200" height="200"></div>
-                <template v-for="(item, index) in imgList">
-                    <div :key="index" class="img-item" :class="{'active': index == 0}"
-                        :style="{ 'background-image': 'url(' + item + ')' }"
-                        @click="showImg(item)">
-                    </div>
-                </template>
+    <template v-if="isShow">      
+        <el-dialog
+            :visible.sync="isOpenAddModal"
+            width="600px"
+            :before-close="handleClose">
+            <span slot="title">{{addModalTitle}}</span>
+            <div>
+                <span style="margin: 0 40px;">区域：{{currRow.regionName}}</span>
+                <span>街道：{{currRow.districtName}}</span>
+                <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" style="margin-top: 10px;" class="add-form">
+                    <el-form-item label="企业" prop="companyName">
+                        <el-input v-model="modalForm.companyName" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系人" prop="masterName">
+                        <el-input v-model="modalForm.masterName" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系方式1" prop="masterPhone">
+                        <el-input v-model="modalForm.masterPhone" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系方式2" prop="slavePhone">
+                        <el-input v-model="modalForm.slavePhone" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="地址" prop="address">
+                        <el-input v-model="modalForm.address" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注" prop="note">
+                        <el-input v-model="modalForm.note" size="small"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div class="img-wrapper">
+                    <div><img v-if="imgList.length > 0" :src="'/record/record_info/show?fileName=' + currImgUrl" width="200" height="200"></div>
+                    <template v-for="(item, index) in imgList">
+                        <div :key="index" class="img-item" :class="{'active': index == 0}"
+                            :style="{ 'background-image': 'url(' + item + ')' }"
+                            @click="showImg(item)">
+                        </div>
+                    </template>
+                </div>
             </div>
-        </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="closeAddModal">关 闭</el-button>
-            <el-button type="primary" @click="update">更 新</el-button>
-        </span>
-    </el-dialog>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeAddModal">关 闭</el-button>
+                <el-button type="primary" @click="update">更 新</el-button>
+            </span>
+        </el-dialog>
+    </template>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -205,8 +197,8 @@
             this.$nextTick(() => this.isShow = true)
         },
         methods: {
-            getTemplateDownload = params => {
-                window.open(`//${window.location.host}/common/template/download?fileName=${params}`, '_blank')
+            getTemplateDownload (params) {
+                window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
             },
             closeAddModal () {
                 this.$refs.modalForm.resetFields()
@@ -276,9 +268,10 @@
                 }
             },
             del (row) {
-                axiosPost(this.baseUrl + 'record_info/delete', row.id)
+                axiosPostJSON(this.baseUrl + 'record_info/delete', { regionId: row.regionId })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
+                        this.search()
                     })
                     .catch(err => {
                         this.$message({ message: err.message, type: 'error' })
