@@ -21,6 +21,8 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class RecordInfoServiceImpl implements RecordInfoService {
 
+  private final String SPLIT_SEPARATE = ",";
+
   @Resource
   private RecordInfoDao recordInfoDao;
 
@@ -29,7 +31,9 @@ public class RecordInfoServiceImpl implements RecordInfoService {
 
   @Override
   public RecordInfo selectById(Integer id) {
-    return recordInfoDao.selectById(id);
+    RecordInfo recordInfo = recordInfoDao.selectById(id);
+    Assert.notNull(recordInfo,"找不到对应资源记录");
+    return recordInfo;
   }
 
   @Override
@@ -53,8 +57,12 @@ public class RecordInfoServiceImpl implements RecordInfoService {
     Assert.notNull(recordInfo,"资源内容为空");
     if(recordInfo.getDistrictId() == null) {
       Assert.notNull(recordInfo.getRegionName(), "街道为空");
+
+      RegionDao.SearchCondition searchCondition = new RegionDao.SearchCondition();
+      searchCondition.setRegionName(recordInfo.getRegionName());
+      searchCondition.setRegionType(true);
       List<Region> regionList = regionDao
-          .selectByCondition(new RegionDao.SearchCondition(recordInfo.getRegionName(), true));
+          .selectByCondition(searchCondition);
       Assert.isTrue(!CollectionUtils.isEmpty(regionList), "没有对应街道");
 
       Region region = regionList.get(0);
@@ -73,5 +81,14 @@ public class RecordInfoServiceImpl implements RecordInfoService {
     return recordInfoDao.update(recordInfo);
   }
 
+  @Override
+  public int deletePhoto(Integer id, String photoName) {
+    RecordInfo recordInfo = selectById(id);
+
+    String photos = recordInfo.getPhotos();
+    photos.replace(photoName,"").replace(photoName + SPLIT_SEPARATE , "");
+    recordInfo.setPhotos(photos);
+    return recordInfoDao.update(recordInfo);
+  }
 
 }

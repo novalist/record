@@ -1,5 +1,6 @@
 package com.nova.util;
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -66,8 +67,17 @@ public class ExcelUtil {
         }
         AnalysisEventListener listener = new ObjectExcelListener();
         ExcelReader reader = new ExcelReader(inputStream, excelTypeEnum, null, listener);
+
         reader.read(new com.alibaba.excel.metadata.Sheet(1, 1, clazz));
 
+        return ((ObjectExcelListener) listener).getData();
+    }
+
+    public static <T extends BaseRowModel> List<T> readAllSheetExcel(final String path,
+        final Class<? extends BaseRowModel> clazz) {
+
+        AnalysisEventListener listener = new ObjectExcelListener();
+        EasyExcel.read(path, clazz, listener).doReadAll();
         return ((ObjectExcelListener) listener).getData();
     }
 

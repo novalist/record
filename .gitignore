@@ -6,6 +6,7 @@ classes/
 # java build
 *.class
 build
+application.yml
 
 # config
 .editorconfig

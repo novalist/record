@@ -46,11 +46,12 @@ public class RecordInfoController {
   private String path;
 
   /**
+   * 资源管理查询
    *
-   * @param regionId
-   * @param districtId
-   * @param key
-   * @return
+   * @param regionId 区域id
+   * @param districtId 街道id
+   * @param key 关键字
+   * @return 列表
    */
   @RequestMapping("/get/info")
   public Object getInfo(@RequestParam(value = "regionId", required = false) Integer regionId,
@@ -66,10 +67,10 @@ public class RecordInfoController {
   }
 
   /**
-   * 新建
+   * 新建资源
    *
-   * @param recordInfo
-   * @return
+   * @param recordInfo 资源对象
+   * @return 影响行数
    */
   @RequestMapping("/insert")
   public Object insert(@RequestBody RecordInfo recordInfo){
@@ -77,10 +78,10 @@ public class RecordInfoController {
   }
 
   /**
-   * 更新
+   * 更新资源
    *
-   * @param recordInfo
-   * @return
+   * @param recordInfo 资源对象
+   * @return 影响行数
    */
   @RequestMapping("/update")
   public Object update(@RequestBody RecordInfo recordInfo){
@@ -88,13 +89,15 @@ public class RecordInfoController {
   }
 
   /**
-   * 删除
+   * 删除资源
    *
-   * @param recordInfo
-   * @return
+   * @param id 资源主键id
+   * @return 影响行数
    */
   @RequestMapping("/delete")
-  public Object delete(@RequestBody RecordInfo recordInfo){
+  public Object delete(@RequestParam(value = "id") Integer id){
+
+    RecordInfo recordInfo = recordInfoService.selectById(id);
     recordInfo.setDelete(true);
     return recordInfoService.update(recordInfo);
   }
@@ -102,22 +105,24 @@ public class RecordInfoController {
   /**
    * 导入文件
    *
-   * @param file
-   * @return
+   * @param file 文件
+   * @return 影响行数
    * @throws IOException
    */
   @RequestMapping("/upload")
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
-    List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
+    String fileName = file.getOriginalFilename() + ExcelUtil.getExcelTypeEnum(file.getOriginalFilename());
+    List<RecordInfo> recordInfoList = ExcelUtil.readAllSheetExcel(fileName,RecordInfo.class);
+    //List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
     return CommonReturnVO.suc(recordInfoService.importRecordInfoList(recordInfoList));
   }
 
   /**
    * 照片上传
    *
-   * @param file
-   * @return
+   * @param file 文件
+   * @return 文件名
    * @throws IOException
    */
   @RequestMapping("/photo/upload")
@@ -139,6 +144,20 @@ public class RecordInfoController {
     }
 
     return CommonReturnVO.suc(fileName , msg);
+  }
+
+  /**
+   * 删除照片
+   *
+   * @param id 主键id
+   * @param photoName 照片名称
+   * @return 影响行数
+   */
+  @RequestMapping("/photo/delete")
+  public Object deletePhoto(@RequestParam(value = "id") Integer id,
+      @RequestParam(value = "photoName") String photoName){
+
+    return CommonReturnVO.suc(recordInfoService.deletePhoto(id,photoName));
   }
 
   /**
@@ -174,7 +193,6 @@ public class RecordInfoController {
    * @param regionId
    * @param districtId
    * @param key
-   * @param request
    * @param response
    * @throws IOException
    */
