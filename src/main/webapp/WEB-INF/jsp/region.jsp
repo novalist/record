@@ -28,7 +28,7 @@
             <el-button type="primary" @click="search">搜索</el-button>
             <el-button type="primary" @click="importFile">导入</el-button>
             <el-button type="primary" @click="newRecord">新建</el-button>
-            <el-button>模板下载</el-button>
+            <el-button @click="getTemplateDownload('region')">模板下载</el-button>
         </el-form-item>
     </el-form>
     <el-table :data="list" border>
@@ -58,9 +58,7 @@
         data () {
             return {
                 formInline: {
-                    regionId: '',
-                    districtId: '',
-                    key: ''
+                    regionId: ''
                 },
                 list: [],
                 regionList: [],
@@ -72,16 +70,13 @@
             this.getSelectData()
         },
         methods: {
-            getDistrictList () {
-                axiosGet(this.baseUrl + 'region/get/info', { regionType:1,parentId: this.formInline.regionId })
-                    .then(res => this.districtList = res)
-                    .catch(err => console.log(err))
-            },
+        	  getTemplateDownload = params => {
+						    window.open(`//${window.location.host}/common/template/download?fileName=${params}`, '_blank')
+						},
             getSelectData () {
                 axiosGet(this.baseUrl + 'region/get/info')
                     .then(res => {
                         this.regionList = res
-                        console.log(this.regionList)
                     })
                     .catch(err => console.log(err))
             },
@@ -93,8 +88,9 @@
             },
             async search () {
                 try {
-                    let res = await axiosGet(this.baseUrl + 'record_info/get/info', this.formInline)
-                    this.list = res
+                    let res = await axiosGet(this.baseUrl + '/region/list', this.formInline)
+                    this.list = res.content
+                    console.log(this.list)
                 } catch (err) {
                     console.log(err)
                 }

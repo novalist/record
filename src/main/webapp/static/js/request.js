@@ -1,12 +1,12 @@
 axios.defaults.withCredentials = true;
-const encodeURIComponent = data => {
+const encodeURIComponent = (data = {}) => {
   const params = []
   for (const key of Object.keys(data)) {
     if (typeof data[key] === 'boolean' 
       || typeof data[key] === 'string' 
       || typeof data[key] === 'number'
     ) {
-      params.push(key + '=' + data[key])
+      if (data[key]) params.push(key + '=' + data[key])
     } else {
       params.push(key + '=' + JSON.stringify(data[key]))
     }
@@ -39,10 +39,7 @@ class HttpRequest {
 
     //响应拦截器
     instance.interceptors.response.use(res => {
-      if (res.data.code === 90001) {
-        window.localStorage.setItem("sid", "")
-        window.location.reload()
-      } else if (res.data.code === 200) {
+      if (res.data.code === 200) {
         return res.data.data
       } else {
         const { code, message, result } = res.data;
@@ -53,17 +50,15 @@ class HttpRequest {
         })
       }
     }, error => {
-      console.log(`请求失败:${error}`)
-      try{
-        if(error == 'Cancel') return;
-        const { status } = error.response;
-        const message = error.message;
-        Message.error(error.message)
+      console.log('请求失败:', error)
+      try {
+        const { status } = error.response
+        const message = error.message
         return Promise.reject({
           status,
           message
         })
-      }catch(e){}
+      } catch(e){}
     })
   }
 
@@ -77,12 +72,14 @@ class HttpRequest {
 
 const fetch = new HttpRequest()
 
-const axiosGet = (url, params, options) => fetch.request({
-  url,
-  params,
-  ...options
-});
-
+const axiosGet = (url, params, options) => {
+  return fetch.request({
+    method: 'get',
+    url: params ? `${url}?${encodeURIComponent(params)}` : url,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    ...options
+  });
+}
 const axiosPost = (url, data, options) => fetch.request({
   url,
   data: encodeURIComponent(data),
