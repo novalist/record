@@ -2,6 +2,7 @@ package com.nova.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -35,4 +36,6 @@ public class Region extends BaseRowModel {
    * 是否删除
    */
   private boolean delete;
+
+  private List<Region> districtList;
 }

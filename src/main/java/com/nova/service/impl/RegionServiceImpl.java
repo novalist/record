@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -26,10 +27,10 @@ public class RegionServiceImpl implements RegionService {
   private RegionDao regionDao;
 
   @Override
-  public List<RegionBO> getRegionList(Integer regionId) {
+  public List<Region> getRegionList(Integer regionId) {
 
     List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null,null));
-    List<RegionBO> regionBOList = new ArrayList<>(regionList.size());
+    List<Region> regionBOList = new ArrayList<>(regionList.size());
     List<Region> regions = regionList.stream().filter(region -> region.getRegionType().equals(0))
         .collect(Collectors.toList());
 
@@ -51,10 +52,9 @@ public class RegionServiceImpl implements RegionService {
 
     regions.forEach(
         region -> {
-          RegionBO regionBO = new RegionBO();
-
-          regionBO.setRegion(region);
-          regionBO.setRegionList(regionMap.get(region.getRegionId()));
+          Region regionBO = new Region();
+          BeanUtils.copyProperties(region,regionBO);
+          regionBO.setDistrictList(regionMap.get(region.getRegionId()));
           regionBOList.add(regionBO);
         }
     );
