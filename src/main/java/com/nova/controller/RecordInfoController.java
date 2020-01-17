@@ -84,7 +84,7 @@ public class RecordInfoController {
    */
   @RequestMapping("/update")
   public Object update(@RequestBody RecordInfo recordInfo){
-    return recordInfoService.update(recordInfo);
+    return CommonReturnVO.suc(recordInfoService.update(recordInfo));
   }
 
   /**
