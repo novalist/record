@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author hzhang1
@@ -35,6 +36,8 @@ public interface RegionDao {
    * @return
    */
   List<Region> selectByCondition(SearchCondition searchCondition);
+
+  Region selectById(@Param("regionId") Integer regionId);
 
   @Data
   @NoArgsConstructor

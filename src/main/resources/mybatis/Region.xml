@@ -11,6 +11,18 @@
   <sql id="Base_Column_List">
     region_id, parent_id, region_name , region_type , is_delete
   </sql>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from record.region
+    <where>
+      <if test="regionId != null and regionId != 0">
+        and region_id = #{regionId}
+      </if>
+    </where>
+  </select>
+
   <select id="selectByCondition" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

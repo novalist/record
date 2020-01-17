@@ -60,7 +60,11 @@ public class RecordInfoServiceImpl implements RecordInfoService {
       Region region = regionList.get(0);
       recordInfo.setDistrictId(region.getRegionId());
       recordInfo.setRegionId(region.getParentId());
+    }else {
+      Region region = regionDao.selectById(recordInfo.getDistrictId());
+      Assert.notNull(region,"街道内容为空");
     }
+
     return recordInfoDao.insert(recordInfo);
   }
 
