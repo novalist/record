@@ -21,4 +21,4 @@ build
 *.iws
 *.iml
 *.ipr
-
+/photo
