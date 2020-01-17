@@ -125,9 +125,9 @@
                     </el-form-item>
                 </el-form>
                 <div class="img-wrapper">
-                    <div><img v-if="imgList.length > 0" :src="'/record/record_info/show?fileName=' + currImgUrl" width="200" height="200"></div>
+                    <div><img v-if="imgList.length > 0" :src="'/record/photo/' + currImgUrl" width="200" height="200"></div>
                     <template v-for="(item, index) in imgList">
-                        <div :key="index" class="img-item" :class="{'active': index == 0}"
+                        <div :key="index" class="img-item" :class="{'active': currImgUrl == item}"
                             :style="{ 'background-image': 'url(' + item + ')' }"
                             @click="showImg(item)">
                         </div>
@@ -172,16 +172,10 @@
                 currImgUrl: '',
                 isOpenAddModal: false,
                 list: [],
-                imgList: ['https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/A.png',
-                    'https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/DT4.png',
-                    'https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/DT6.png',
-                    'https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/DT8.png',
-                    'https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/DT9.png',
-                    'https://gyc-wms-app.oss-cn-hangzhou.aliyuncs.com/windows/template-editor/express/DT1.png'],
+                imgList: [],
                 regionList: [],
                 districtList: [],
                 baseUrl: '${pageContext.request.contextPath}/',
-                baseImgUrl: '',
                 rules: {
                     companyName: [
                         { required: true, message: '请输入企业名称', trigger: 'change' },
@@ -225,15 +219,12 @@
                 axiosGet(this.baseUrl + 'region/get/info')
                     .then(res => this.regionList = res)
                     .catch(err => console.log(err))
-                axiosGet(this.baseUrl + 'record_info/photo/path/get')
-                    .then(res => this.baseImgUrl = res)
-                    .catch(err => console.log(err))
             },
             uploadImg (row) {
 
             },
             showImg (item) {
-
+                 this.currImgUrl = item
             },
             edit (row) {
                 this.addModalTitle = '编辑'
@@ -247,7 +238,7 @@
                 this.modalForm.address = row.address
                 this.modalForm.note = row.note
                 let photos = row.photos ? row.photos.split(',') : []
-                // this.imgList = this.modalForm.photos.map(item => this.baseImgUrl + item )
+                this.imgList = this.modalForm.photos.map(item => '/record/photo/' + item )
                 this.currImgUrl = photos[0]
                 console.log(this.currImgUrl)
                 this.isOpenAddModal = true
