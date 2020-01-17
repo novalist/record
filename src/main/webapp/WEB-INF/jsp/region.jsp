@@ -10,15 +10,17 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/global.css">
     <title>区域管理</title>
     <style type="text/css">
-        
+        .item {
+        	margin: 0 10px 10px;
+        }
     </style>
 </head>
 <body>
 <div id="main" v-if="isShow">
     <h3>区域/街道管理</h3>
-    <el-form :inline="true" :model="formInline">
+    <el-form :inline="true" :model="addForm">
         <el-form-item label="区域：" prop="regionId">
-            <el-select v-model="formInline.regionId" placeholder="区域">
+            <el-select v-model="addForm.regionId" placeholder="区域">
                 <el-option label="全部" value=""></el-option>
                 <el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
             </el-select>
@@ -26,7 +28,7 @@
         <el-form-item>
             <el-button type="primary" @click="search">搜索</el-button>
             <el-button type="primary" @click="importFile">导入</el-button>
-            <el-button type="primary" @click="newRecord">新建</el-button>
+            <el-button type="primary" @click="isOpenAddModal = true">新建</el-button>
             <el-button @click="getTemplateDownload('region')">模板下载</el-button>
         </el-form-item>
     </el-form>
@@ -48,6 +50,30 @@
             </template>
         </el-table-column>
     </el-table>
+     <template v-if="isShow">      
+        <el-dialog
+            :visible.sync="isOpenAddModal"
+            width="400px"
+            :before-close="handleClose">
+            <span slot="title">新建</span>
+            <div class="item">
+            	<span>区域</span>
+            	<el-input v-model="addForm.regionName" size="small" style="width: 120px;"></el-input>
+            	<el-button @click="closeAddModal" size="small">新建</el-button>
+            </div>
+            <div class="item">
+            	<span>街道</span>
+            	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;">
+					<el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
+	            </el-select>
+            	<el-input v-model="addForm.districtId" size="small" style="width: 120px;"></el-input>
+            	<el-button @click="closeAddModal" size="small">新建</el-button>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeAddModal">关 闭</el-button>
+            </span>
+        </el-dialog>
+    </template>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -59,9 +85,12 @@
         el: '#main',
         data () {
             return {
-            	 isShow: false,
-                formInline: {
-                    regionId: ''
+            	isOpenAddModal: false,
+            	isShow: false,
+                addForm: {
+                    regionId: '',
+                    regionName: '',
+                    districtId: ''
                 },
                 list: [],
                 regionList: [],
@@ -74,9 +103,25 @@
             this.isShow = true
         },
         methods: {
-        	  getTemplateDownload (params) {
-						    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
-						},
+        	 handleClose(done) {
+                this.addForm = {
+                    regionId: '',
+                    regionName: '',
+                    districtId: ''
+                }
+                done()
+            },
+        	closeAddModal () {
+                this.addForm = {
+                    regionId: '',
+                    regionName: '',
+                    districtId: ''
+                }
+                this.isOpenAddModal = false
+            },
+        	getTemplateDownload (params) {
+			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
+			},
             getSelectData () {
                 axiosGet(this.baseUrl + 'region/get/info')
                     .then(res => {
@@ -96,7 +141,7 @@
             },
             async search () {
                 try {
-                    let res = await axiosGet(this.baseUrl + '/region/list', this.formInline)
+                    let res = await axiosGet(this.baseUrl + '/region/list', this.addForm)
                     this.list = res.content
                     console.log(this.list)
                 } catch (err) {
@@ -104,9 +149,6 @@
                 }
             },
             importFile () {
-
-            },
-            newRecord () {
 
             }
         }
