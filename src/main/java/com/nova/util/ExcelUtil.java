@@ -8,6 +8,7 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.BaseRowModel;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -73,11 +75,11 @@ public class ExcelUtil {
         return ((ObjectExcelListener) listener).getData();
     }
 
-    public static <T extends BaseRowModel> List<T> readAllSheetExcel(final String path,
+    public static <T extends BaseRowModel> List<T> readAllSheetExcel(final InputStream inputStream,
         final Class<? extends BaseRowModel> clazz) {
 
         AnalysisEventListener listener = new ObjectExcelListener();
-        EasyExcel.read(path, clazz, listener).doReadAll();
+        EasyExcel.read(inputStream, clazz, listener).doReadAll();
         return ((ObjectExcelListener) listener).getData();
     }
 
@@ -126,6 +128,41 @@ public class ExcelUtil {
         } else {
             throw new RuntimeException("文件格式不正确，请选择.xlsx或.xls格式文件！");
         }
+    }
+
+    /**
+     * 多Sheet写入Excel
+     *
+     * @param path 文件路径
+     * @param dataList 源数据
+     * @param sheetNameList sheet名列表
+     * @param clazzList 源类
+     * @param excelTypeEnum excel类型
+     */
+    public static <T> String writeExcelWithSheet(String fileName, List<List<T>> dataList,
+        List<String> sheetNameList, List<Class<T>> clazzList,
+        ExcelTypeEnum excelTypeEnum) {
+
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(""))
+            .getPath() + fileName + excelTypeEnum.getValue();
+
+        Assert.hasText(path,"文件地址为空");
+        Assert.isTrue(path.lastIndexOf(".") != -1, "文件格式错误");
+
+        boolean isExcel =
+            path.contains(ExcelTypeEnum.XLS.getValue()) || path.contains(ExcelTypeEnum.XLSX.getValue());
+        Assert.isTrue(isExcel,"文件非Excel格式");
+
+        ExcelWriter excelWriter = EasyExcel.write(path).excelType(excelTypeEnum).build();
+        for (int index = 0; index < dataList.size(); index++) {
+
+            WriteSheet writeSheet = EasyExcel.writerSheet(index,sheetNameList.get(index))
+                .head(clazzList.get(index)).build();
+            excelWriter.write(dataList.get(index),writeSheet);
+        }
+        excelWriter.finish();
+
+        return path;
     }
 
     /**

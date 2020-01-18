@@ -12,8 +12,10 @@ import com.nova.util.FileUtil;
 import com.nova.util.ImageUtil;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,8 +114,7 @@ public class RecordInfoController {
   @RequestMapping("/upload")
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
-    String fileName = file.getOriginalFilename() + ExcelUtil.getExcelTypeEnum(file.getOriginalFilename());
-    List<RecordInfo> recordInfoList = ExcelUtil.readAllSheetExcel(fileName,RecordInfo.class);
+    List<RecordInfo> recordInfoList = ExcelUtil.readAllSheetExcel(file.getInputStream(),RecordInfo.class);
     //List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
     return CommonReturnVO.suc(recordInfoService.importRecordInfoList(recordInfoList));
   }
@@ -205,13 +206,34 @@ public class RecordInfoController {
     List<RecordInfo> recordInfoList = recordInfoService
         .getRecordInfoList(regionId, districtId, key);
 
-    String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(""))
-        .getPath() + "static/upload/";
     String fileName = "资源管理";
 
-    // 全部字段导出
-    ExcelUtil.writeExcelWithModel(path + fileName + ExcelTypeEnum.XLSX.getValue(), recordInfoList ,ExcelTypeEnum.XLSX, RecordInfo.class);
-    FileUtil.download(fileName + ExcelTypeEnum.XLSX.getValue(), path + fileName + ExcelTypeEnum.XLSX.getValue(), new File(path + fileName + ExcelTypeEnum.XLSX.getValue()), response);
+    List<List<RecordInfo>> list = new ArrayList<>();
+    List<String> sheetNameList = new ArrayList<>();
+    List classList = new ArrayList<>();
+    Map<Integer,List<RecordInfo>> recordInfoMap = new HashMap<>(8);
+    for(RecordInfo recordInfo : recordInfoList){
+
+      List<RecordInfo> recordInfos = null;
+      if(recordInfoMap.containsKey(recordInfo.getRegionId())){
+        recordInfos = recordInfoMap.get(recordInfo.getRegionId());
+      }else {
+        recordInfos = new ArrayList<>();
+      }
+      recordInfos.add(recordInfo);
+      recordInfoMap.put(recordInfo.getRegionId(),recordInfos);
+    }
+
+    for(Integer recordId : recordInfoMap.keySet()){
+      list.add(recordInfoMap.get(recordId));
+      sheetNameList.add(recordInfoMap.get(recordId).get(0).getRegionName());
+      classList.add(RecordInfo.class);
+    }
+
+    String path = ExcelUtil
+        .writeExcelWithSheet(fileName, list, sheetNameList,
+            classList, ExcelTypeEnum.XLSX);
+    FileUtil.download(fileName + ExcelTypeEnum.XLSX.getValue(), path, new File(path), response);
 
   }
 

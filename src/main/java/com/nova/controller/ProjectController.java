@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 项目管理
+ *
  * @author hzhang1
  * @date 2020-01-16
  */
@@ -28,23 +30,33 @@ public class ProjectController {
   @Resource
   private ProjectService projectService;
 
-  @RequestMapping("/get/info")
+  /**
+   * 项目信息列表
+   *
+   * @param id 主键id
+   * @param connectName 联系人
+   * @param pageNum 当前页
+   * @param pageSize 每页显示
+   * @return 结果
+   */
+  @RequestMapping("/list")
   public Object getInfo(@RequestParam(value = "id", required = false) Integer id,
+      @RequestParam(value = "connectName", required = false) String connectName,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
 
     Page<Project> page = PageHelper.startPage(pageNum,pageSize);
     List<Project> projectList = projectService
-        .selectByCondition(new SearchCondition(id));
+        .selectByCondition(new SearchCondition(id ,connectName));
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,projectList));
   }
 
 
   /**
-   * 新建
+   * 新建项目
    *
-   * @param project
-   * @return
+   * @param project 项目
+   * @return 影响行数
    */
   @RequestMapping("/insert")
   public Object insert(@RequestBody Project project){
@@ -52,34 +64,36 @@ public class ProjectController {
   }
 
   /**
-   * 更新
+   * 更新项目
    *
-   * @param project
-   * @return
+   * @param project 项目
+   * @return 影响行数
    */
   @RequestMapping("/update")
   public Object update(@RequestBody Project project){
-    return projectService.update(project);
+    return CommonReturnVO.suc(projectService.update(project));
   }
 
   /**
-   * 删除
+   * 删除项目
    *
-   * @param project
+   * @param id 主键id
    * @return
    */
   @RequestMapping("/delete")
-  public Object delete(@RequestBody Project project){
+  public Object delete(@RequestParam(value = "id") Integer id){
+
+    Project project = projectService.selectById(id);
     project.setDelete(true);
-    return projectService.update(project);
+    return CommonReturnVO.suc(projectService.update(project));
   }
 
   /**
    * 导入文件
    *
-   * @param file
-   * @return
-   * @throws IOException
+   * @param file 文件
+   * @return 影响行数
+   * @throws IOException 异常
    */
   @RequestMapping("/upload")
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {

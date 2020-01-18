@@ -6,9 +6,11 @@ import com.nova.dao.RegionDao;
 import com.nova.entity.RecordInfo;
 import com.nova.entity.Region;
 import com.nova.service.RecordInfoService;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +44,7 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int importRecordInfoList(List<RecordInfo> recordInfoList) {
 
     int count = 0;
@@ -52,14 +55,15 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int insert(RecordInfo recordInfo) {
 
     Assert.notNull(recordInfo,"资源内容为空");
     if(recordInfo.getDistrictId() == null) {
-      Assert.notNull(recordInfo.getRegionName(), "街道为空");
+      Assert.notNull(recordInfo.getDistrictName(), "街道为空");
 
       RegionDao.SearchCondition searchCondition = new RegionDao.SearchCondition();
-      searchCondition.setRegionName(recordInfo.getRegionName());
+      searchCondition.setRegionName(recordInfo.getDistrictName());
       searchCondition.setRegionType(true);
       List<Region> regionList = regionDao
           .selectByCondition(searchCondition);
@@ -71,12 +75,15 @@ public class RecordInfoServiceImpl implements RecordInfoService {
     }else {
       Region region = regionDao.selectById(recordInfo.getDistrictId());
       Assert.notNull(region,"街道内容为空");
+      recordInfo.setRegionId(region.getParentId());
     }
 
+    recordInfo.setCreatedTime(new Date());
     return recordInfoDao.insert(recordInfo);
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int update(RecordInfo recordInfo) {
     return recordInfoDao.update(recordInfo);
   }

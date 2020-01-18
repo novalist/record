@@ -54,5 +54,7 @@ public interface ProjectDao {
 
     private Integer id;
 
+    private String connectName;
+
   }
 }

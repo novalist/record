@@ -1,5 +1,6 @@
 package com.nova.entity;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
 import java.util.Date;
@@ -12,16 +13,19 @@ import lombok.Data;
 @Data
 public class RecordInfo extends BaseRowModel {
 
+  @ExcelIgnore
   private Integer id;
 
   @ExcelProperty(value = "企业")
   private String companyName;
 
+  @ExcelIgnore
   private Integer regionId;
 
-  @ExcelProperty(value = "区域")
+  @ExcelIgnore
   private String regionName;
 
+  @ExcelIgnore
   private Integer districtId;
 
   @ExcelProperty(value = "街道")
@@ -33,6 +37,7 @@ public class RecordInfo extends BaseRowModel {
   @ExcelProperty(value = "联系电话1")
   private String masterPhone;
 
+  @ExcelIgnore
   private String slaveName;
 
   @ExcelProperty(value = "联系电话2")
@@ -47,12 +52,16 @@ public class RecordInfo extends BaseRowModel {
   @ExcelProperty(value = "备注")
   private String note;
 
+  @ExcelIgnore
   private String photos;
 
+  @ExcelIgnore
   private boolean delete;
 
+  @ExcelIgnore
   private Date createdTime;
 
+  @ExcelIgnore
   private Date lastUpdatedTime;
 
 }

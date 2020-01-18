@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -29,7 +30,7 @@ public class RegionServiceImpl implements RegionService {
   @Override
   public List<Region> getRegionList(Integer regionId) {
 
-    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(regionId, null, null,null));
+    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(null, null, regionId,null));
     List<Region> regionBOList = new ArrayList<>(regionList.size());
     List<Region> regions = regionList.stream().filter(region -> region.getRegionType().equals(0))
         .collect(Collectors.toList());
@@ -68,6 +69,7 @@ public class RegionServiceImpl implements RegionService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int importRegionList(List<Region> regionList) {
 
     int count = 0;
@@ -78,14 +80,17 @@ public class RegionServiceImpl implements RegionService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int insert(Region region) {
 
     Assert.notNull(region,"内容为空");
     Assert.notNull(region.getRegionName(),"名称为空");
+
     return regionDao.insert(region);
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public int update(Region region) {
     return regionDao.update(region);
   }

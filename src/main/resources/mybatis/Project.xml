@@ -32,6 +32,9 @@
       <if test="id != null and id != 0">
         and id = #{id}
       </if>
+      <if test="connectName != null">
+        and connect_name = #{connectName}
+      </if>
     </where>
   </select>
 
@@ -46,7 +49,7 @@
     values (#{id}, #{companyName}, #{connectName}, #{connectPhone}, #{area}, #{content},
     #{detail},  #{delete} , #{createdTime} ,  now())
     ON DUPLICATE KEY UPDATE
-    company_name = #{companyName}, connect_name = #{connectName},
+    connect_name = #{connectName},
     connect_phone = #{connectPhone}, area = #{area}, content = #{content} ,
     last_updated_time = now()
   </insert>
@@ -54,9 +57,6 @@
   <update id="update" parameterType="com.nova.entity.RecordInfo">
     update record.project
     <set>
-      <if test="companyName != null">
-        company_name = #{companyName},
-      </if>
       <if test="connectName != null">
         connect_name = #{connectName},
       </if>
@@ -68,6 +68,9 @@
       </if>
       <if test="content != null">
         content = #{content},
+      </if>
+      <if test="detail != null">
+        detail = #{detail},
       </if>
       <if test="delete != null">
         is_delete = #{delete},
