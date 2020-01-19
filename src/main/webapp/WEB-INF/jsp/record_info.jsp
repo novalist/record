@@ -17,11 +17,31 @@
             width: 200px;
         }
         .img-wrapper {
+            text-align: center;
             position: absolute;
             right: 30px;
-            top: 100px;
+            top: 90px;
             width: 240px;
             height: 240px;
+        }
+        .imgs {
+            text-align: left;
+            width: 260px;
+            overflow: auto;
+            height: 120px;
+            margin-top: 10px;
+        }
+        .img-item .el-icon-close {
+            position: absolute;
+            right: 0;
+            cursor: pointer;
+            padding: 0 0 5px 5px;
+            font-size: 16px;
+            color: red;
+            font-weight: bold;
+        }
+        .img-item .el-icon-close:hover {
+            opacity: 0.7;
         }
         .el-dialog__body {
             padding: 20px;
@@ -34,6 +54,7 @@
             background-size: cover;
             border: 1px solid #DCDEE2;
             cursor: pointer;
+            position: relative;
         }
         .img-item.active {
             border-color: #3d99ed;
@@ -97,7 +118,7 @@
                         <a>上传图片</a>
                     </el-upload>
                     <a @click.stop="edit(row)">编辑</a>
-                    <a @click.stop="del(row)" class="red">删除</a>
+                    <a class="red" @click="openDelModal(row)">删除</a>
                 </div>
             </template>
         </el-table-column>
@@ -132,19 +153,31 @@
                     </el-form-item>
                 </el-form>
                 <div class="img-wrapper">
-                    <div><img v-if="imgList.length > 0" :src="currImgUrl" width="200" height="200"></div>
-                    <template v-for="(item, index) in imgList">
-                        <div :key="index" class="img-item" :class="{'active': currImgUrl == item}"
-                            :style="{ 'background-image': 'url(' + item + ')' }"
+                    <img v-if="imgList.length > 0" :src="'/record/photo/'+currImgUrl" width="200" height="200">
+                    <div class="imgs">
+                        <div v-for="(item, index) in imgList" :key="index" class="img-item" :class="{'active': currImgUrl == item}"
+                            :style="{ 'background-image': 'url(/record/photo/' + item + ')' }"
                             @click="showImg(item)">
+                            <i class="el-icon-close" @click="delImg(item)"></i>
                         </div>
-                    </template>
+                    </div>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeAddModal">关 闭</el-button>
                 <el-button type="primary" @click="update">更 新</el-button>
             </span>
+        </el-dialog>
+        <el-dialog
+          title="提示"
+          :visible.sync="isOpenDelModal"
+          width="300px">
+          <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
+          <span style="font-size: 16px;">确定删除吗</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="isOpenDelModal = false">取 消</el-button>
+            <el-button type="primary" @click="del">确 定</el-button>
+          </span>
         </el-dialog>
     </template>
 </div>
@@ -158,6 +191,7 @@
         el: '#main',
         data () {
             return {
+                isOpenDelModal: false,
                 isShow: false,
                 addModalTitle: '新建',
                 currRow: {},
@@ -198,6 +232,10 @@
             this.$nextTick(() => this.isShow = true)
         },
         methods: {
+            openDelModal (row) {
+                this.currRow = row
+                this.isOpenDelModal = true
+            },
             getTemplateDownload (params) {
                 window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
             },
@@ -231,16 +269,28 @@
             getDistrictList () {
                 axiosGet(this.baseUrl + 'region/get/info', { regionType:1,parentId: this.formInline.regionId })
                     .then(res => this.districtList = res)
-                    .catch(err => console.log(err))
-
+                    .catch(err => {
+                        this.$message({ message: err.message, type: 'error' })
+                        console.log(err)
+                    })
             },
             getRegionData () {
                 axiosGet(this.baseUrl + 'region/get/info')
                     .then(res => this.regionList = res)
-                    .catch(err => console.log(err))
+                    .catch(err => {
+                        this.$message({ message: err.message, type: 'error' })
+                        console.log(err)
+                    })
             },
-            uploadImg (row) {
-
+            delImg (item) {
+                axiosPost(this.baseUrl + '/record_info/photo/delete', { id: this.currRow.id, photoName: item })
+                    .then(res => {
+                        this.$message({ message: '删除成功！', type: 'success' })
+                        this.search()
+                    })
+                    .catch(err => {
+                        this.$message({ message: err.message, type: 'error' })
+                    })
             },
             showImg (item) {
                  this.currImgUrl = item
@@ -256,18 +306,15 @@
                 this.modalForm.slavePhone = row.slavePhone
                 this.modalForm.address = row.address
                 this.modalForm.note = row.note
-                let photos = row.photos ? row.photos.split(',') : []
-                this.imgList = photos.map(item => '/record/photo/' + item )
-                this.currImgUrl = '/record/photo/' + photos[0]
-                console.log(this.currImgUrl)
+                this.imgList = row.photos ? row.photos.split(',') : []
+                this.currImgUrl = this.imgList[0]
                 this.isOpenAddModal = true
             },
             async update () {
-                console.log(this.$refs)
                 try {
                     await this.$refs.modalForm.validate()
                     let url = this.addModalTitle == '编辑' ? 'record_info/update' : 'record_info/insert'
-                    let res = await axiosPostJSON(this.baseUrl + url, this.modalForm)
+                    let res = await axiosPostJSON(this.baseUrl + url, { ...this.modalForm, id: this.modalForm.id })
                     console.log(res)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })
@@ -277,8 +324,10 @@
                     err.message && this.$message({ message: err.message, type: 'error' })
                 }
             },
-            del (row) {
-                axiosPostJSON(this.baseUrl + 'record_info/delete', { regionId: row.regionId })
+            del () {
+                console.log('currRow', this.currRow)
+                this.isOpenDelModal = true
+                axiosPost(this.baseUrl + 'record_info/delete', { id: this.currRow.id })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
                         this.search()
@@ -291,6 +340,11 @@
                 try {
                     let res = await axiosGet(this.baseUrl + 'record_info/get/info', this.formInline)
                     this.list = res.content
+                    if (this.currRow.id) {
+                        let row = this.list.find(item => item.id == this.currRow.id)
+                        this.currRow = row
+                    }
+                    console.log(this.currRow)
                 } catch (err) {
                     console.log(err)
                 }

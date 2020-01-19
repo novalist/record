@@ -18,9 +18,9 @@
 <body>
 <div id="main" v-if="isShow">
     <h3>区域/街道管理</h3>
-    <el-form :inline="true" :model="addForm">
+    <el-form :inline="true" :model="searchForm">
         <el-form-item label="区域：" prop="regionId">
-            <el-select v-model="addForm.regionId" placeholder="区域">
+            <el-select v-model="searchForm.regionId" placeholder="区域">
                 <el-option label="全部" value=""></el-option>
                 <el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
             </el-select>
@@ -39,7 +39,7 @@
             <el-button @click="getTemplateDownload('区域街道模版.xlsx')">模板下载</el-button>
         </el-form-item>
     </el-form>
-    <el-table :data="list" border>
+    <el-table :data="list" border v-loading="loading">
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
         <el-table-column prop="regionName" label="区域" width="240" ></el-table-column>
         <el-table-column prop="districtName" label="街道">
@@ -51,23 +51,23 @@
         </el-table-column>
         <el-table-column label="操作" width="120" >
             <template slot-scope="{ row }">
-            	<div :class="row.districtList.length > 1 ? 'cell-line':''" class="action-btn" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
-              	<a @click.stop="del(row, item)" class="red">删除</a>
-              </div>
+             	<div v-if="!row.districtList || row.districtList.length == 0" class="action-btn"><a @click.stop="del(row.regionId)" class="red">删除</a></div>
+             	<div v-else :class="row.districtList.length > 1 ? 'cell-line':''" class="action-btn" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
+              		<a @click.stop="del(item.regionId)" class="red">删除</a>
+             	</div>
             </template>
         </el-table-column>
     </el-table>
      <template v-if="isShow">      
         <el-dialog
             :visible.sync="isOpenAddModal"
-            width="400px"
+            width="410px"
             :before-close="handleClose">
             <span slot="title">新建</span>
             <div class="item">
             	<span>区域</span>
-            	<el-input v-model="addForm.regionName" size="small" style="width: 120px;"></el-input>
-            	<el-button @click="closeAddModal" 
-            		type="primary" 
+            	<el-input v-model="addForm.regionName" size="small" style="width: 120px;margin-left: 5px;"></el-input>
+            	<el-button type="primary" 
             		size="small" 
             		@click="newRegion(0)" 
             		:disabled="!addForm.regionName" 
@@ -75,12 +75,11 @@
             </div>
             <div class="item">
             	<span>街道</span>
-            	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;">
+            	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;margin-left: 5px;">
 					<el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
 	            </el-select>
             	<el-input v-model="addForm.districtName" size="small" style="width: 120px;"></el-input>
-            	<el-button @click="closeAddModal" 
-            		size="small" 
+            	<el-button size="small" 
             		type="primary" 
             		@click="newRegion(1)" 
             		:disabled="!addForm.districtName || !addForm.regionId"
@@ -102,10 +101,14 @@
         el: '#main',
         data () {
             return {
+            	loading: false,
             	regionAdding: false,
             	districtAdding: false,
             	isOpenAddModal: false,
             	isShow: false,
+            	searchForm: {
+					regionId: ''
+            	},
                 addForm: {
                     regionId: '',
                     regionName: '',
@@ -123,15 +126,15 @@
         },
         methods: {
         	async newRegion (regionType) {
-        		if (regionType == 0 && !addForm.regionName) {
+        		if (regionType == 0 && !this.addForm.regionName) {
         			this.$message({ message: '请输入区域名称', type: 'error' })
         			return
         		} else if (regionType == 1) {
-        			if (!!addForm.parentId) {
+        			if (!this.addForm.regionId) {
         				this.$message({ message: '请选择街道区域', type: 'error' })
         				return
         			}
-        			else if (!addForm.districtName) {
+        			else if (!this.addForm.districtName) {
         				this.$message({ message: '请输入街道名称', type: 'error' })
         				return
         			}
@@ -153,11 +156,17 @@
         				}
         				this.districtAdding = true
         			}
-        			let res = await axiosPostJSON('/region/insert', params)
-        			console.log(res)
-        			regionType == 0 ? this.regionAdding = false : this.districtAdding = false
-        			this.$message({ message: res.message, type: 'success' })
-        			if (regionType == 0) this.getSelectData()
+        			let res = await axiosPostJSON('/record/region/insert', params)
+        			this.$message({ message: '新建成功！', type: 'success' })
+        			if (regionType == 0) {
+        				this.getSelectData()
+        				this.regionAdding = false
+        				this.addForm.regionName = ''
+        			} else {
+        				this.districtAdding = false
+        				this.addForm.regionId = ''
+        				this.addForm.districtName = ''
+        			}
  					this.search()
         		} catch (err) {
         			console.log(err)
@@ -203,8 +212,8 @@
                     })
                     .catch(err => console.log(err))
             },
-            del (row) {
-                axiosPostJSON(this.baseUrl + 'region/delete', { regionId: row.regionId })
+            del (regionId) {
+                axiosPostJSON(this.baseUrl + 'region/delete', { regionId })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
                         this.search()
@@ -215,11 +224,13 @@
             },
             async search () {
                 try {
-                    let res = await axiosGet(this.baseUrl + '/region/list', this.addForm)
+                	this.loading = true
+                    let res = await axiosGet(this.baseUrl + 'region/list', this.searchForm)
                     this.list = res.content
-                    console.log(this.list)
                 } catch (err) {
                     console.log(err)
+                } finally {
+                	this.loading = false
                 }
             }
         }

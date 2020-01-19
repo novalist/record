@@ -16,23 +16,20 @@
 <body>
 <div id="main" v-if="isShow">
     <h3>项目管理</h3>
-    <el-form :inline="true" :model="formInline">
-        <el-form-item label="负责人：" prop="connectName">
-            <el-input v-model="formInline.connectName" placeholder="负责人"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="search">搜索</el-button>
-            <el-upload action="/record/project/upload"
-                style="display: inline-block;"
-                multiple
-                :show-file-list="false"
-                :on-success="handleFileSuccess"
-                :on-error="handleFileError">
-                <el-button type="primary">导入</el-button>
-            </el-upload>
-            <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
-        </el-form-item>
-    </el-form>
+    <div style="margin-bottom: 22px;">  
+        <label class=".el-form-item__label">负责人：</label>
+        <el-input v-model="formInline.connectName" style="width: 217px;" placeholder="负责人"></el-input>
+        <el-button type="primary" @click="search">搜索</el-button>
+        <el-upload action="/record/project/upload"
+            style="display: inline-block;"
+            multiple
+            :show-file-list="false"
+            :on-success="handleFileSuccess"
+            :on-error="handleFileError">
+            <el-button type="primary">导入</el-button>
+        </el-upload>
+        <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
+    </div>
     <el-table :data="list" border>
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
         <el-table-column prop="companyName" label="企业" width="180" ></el-table-column>
@@ -72,7 +69,6 @@
             }
         },
         mounted () {
-            this.getSelectData()
             this.isShow = true
         },
         methods: {
@@ -92,13 +88,6 @@
             },
         	getTemplateDownload (params) {
 			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
-            },
-            getSelectData () {
-                axiosGet(this.baseUrl + 'project/get/info')
-                    .then(res => {
-                        this.regionList = res
-                    })
-                    .catch(err => console.log(err))
             },
             del (row) {
                 axiosPostJSON(this.baseUrl + 'project/delete', { masterName: row.masterName })
