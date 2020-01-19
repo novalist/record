@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,7 +116,9 @@ public class RecordInfoController {
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
     List<RecordInfo> recordInfoList = ExcelUtil.readAllSheetExcel(file.getInputStream(),RecordInfo.class);
-    //List<RecordInfo> recordInfoList = ExcelUtil.readExcel(file.getInputStream(), RecordInfo.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
+    if(CollectionUtils.isEmpty(recordInfoList)) {
+      return CommonReturnVO.fail("导入内容为空");
+    }
     return CommonReturnVO.suc(recordInfoService.importRecordInfoList(recordInfoList));
   }
 

@@ -11,6 +11,7 @@ import com.nova.util.ExcelUtil;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -98,8 +99,11 @@ public class ProjectController {
   @RequestMapping("/upload")
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
-    List<Project> recordInfoList = ExcelUtil
+    List<Project> projectList = ExcelUtil
         .readExcel(file.getInputStream(), Project.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
-    return CommonReturnVO.suc(projectService.importProjectList(recordInfoList));
+    if(CollectionUtils.isEmpty(projectList)) {
+      return CommonReturnVO.fail("导入内容为空");
+    }
+    return CommonReturnVO.suc(projectService.importProjectList(projectList));
   }
 }

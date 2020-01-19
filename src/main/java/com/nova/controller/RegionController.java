@@ -10,6 +10,7 @@ import com.nova.util.ExcelUtil;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,6 +68,9 @@ public class RegionController {
   public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
 
     List<Region> regionList = ExcelUtil.readExcel(file.getInputStream(), Region.class, ExcelUtil.getExcelTypeEnum(file.getOriginalFilename()));
+    if(CollectionUtils.isEmpty(regionList)) {
+      return CommonReturnVO.fail("导入内容为空");
+    }
     return CommonReturnVO.suc(regionService.importRegionList(regionList));
   }
 }

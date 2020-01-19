@@ -59,6 +59,7 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   public int insert(RecordInfo recordInfo) {
 
     Assert.notNull(recordInfo,"资源内容为空");
+    Assert.notNull(recordInfo.getCompanyName(),"企业信息为空");
     if(recordInfo.getDistrictId() == null) {
       Assert.notNull(recordInfo.getDistrictName(), "街道为空");
 
