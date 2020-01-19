@@ -59,6 +59,9 @@
   <update id="update" parameterType="com.nova.entity.RecordInfo">
     update record.project
     <set>
+      <if test="companyName != null">
+        company_name = #{companyName},
+      </if>
       <if test="connectName != null">
         connect_name = #{connectName},
       </if>

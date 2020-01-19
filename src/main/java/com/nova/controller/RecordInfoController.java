@@ -133,11 +133,9 @@ public class RecordInfoController {
   public Object uploadPhoto(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "id") Integer id) throws IOException {
 
-    String localPath = path;
     String msg = "";
-
     String fileName = id + "_" +file.getOriginalFilename();
-    if (ImageUtil.upload(file, localPath, fileName)){
+    if (ImageUtil.upload(file, path, fileName)){
       msg = "上传成功！";
 
       RecordInfo recordInfo = recordInfoService.selectById(id);
