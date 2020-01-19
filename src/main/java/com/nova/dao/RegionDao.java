@@ -47,6 +47,7 @@ public interface RegionDao {
     private Integer regionType;
     private Integer parentId;
     private String regionName;
+    private Integer delete;
 
   }
 }

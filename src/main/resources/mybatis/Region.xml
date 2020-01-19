@@ -41,7 +41,9 @@
       <if test="regionName != null">
         and region_name = #{regionName}
       </if>
-      and is_delete = 0
+      <if test="delete != null">
+        and is_delete = #{delete}
+      </if>
     </where>
   </select>
 

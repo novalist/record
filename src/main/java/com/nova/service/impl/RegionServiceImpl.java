@@ -31,7 +31,7 @@ public class RegionServiceImpl implements RegionService {
   @Override
   public List<Region> getRegionList(Integer regionId) {
 
-    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(null, null, regionId,null));
+    List<Region> regionList = regionDao.selectByCondition(new SearchCondition(null, null, regionId,null,0));
     List<Region> regionBOList = new ArrayList<>(regionList.size());
     List<Region> regions = regionList.stream().filter(region -> region.getRegionType().equals(0))
         .collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class RegionServiceImpl implements RegionService {
 
   @Override
   public List<Region> getRegionList(Integer regionId,Integer regionType,Integer parentId) {
-    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId,null));
+    return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId,null,0));
   }
 
   @Override
