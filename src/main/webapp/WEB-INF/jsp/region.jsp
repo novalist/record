@@ -73,6 +73,7 @@
             		:disabled="!addForm.regionName" 
             		:loading="regionAdding">新建</el-button>
             </div>
+            <div style="border-bottom: 1px solid #EBEEF5;margin: 5px;"></div>
             <div class="item">
             	<span>街道</span>
             	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;margin-left: 5px;">

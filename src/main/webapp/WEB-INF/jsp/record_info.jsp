@@ -171,7 +171,7 @@
         <el-dialog
           title="提示"
           :visible.sync="isOpenDelModal"
-          width="300px">
+          width="350px">
           <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
           <span style="font-size: 16px;">确定删除吗</span>
           <span slot="footer" class="dialog-footer">
@@ -240,10 +240,30 @@
                 window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
             },
             closeAddModal () {
+                this.modalForm = {
+                    regionId: '',
+                    districtId: '',
+                    companyName: '',
+                    masterName: '',
+                    masterPhone: '',
+                    slavePhone: '',
+                    address: '',
+                    note: ''
+                }
                 this.$refs.modalForm.resetFields()
                 this.isOpenAddModal = false
             },
             handleClose(done) {
+                this.modalForm = {
+                    regionId: '',
+                    districtId: '',
+                    companyName: '',
+                    masterName: '',
+                    masterPhone: '',
+                    slavePhone: '',
+                    address: '',
+                    note: ''
+                }
                 this.$refs.modalForm.resetFields()
                 done()
             },
@@ -313,8 +333,12 @@
             async update () {
                 try {
                     await this.$refs.modalForm.validate()
-                    let url = this.addModalTitle == '编辑' ? 'record_info/update' : 'record_info/insert'
-                    let res = await axiosPostJSON(this.baseUrl + url, { ...this.modalForm, id: this.modalForm.id })
+                    let url 
+                    let params = { ...this.modalForm }
+                    if (this.addModalTitle == '编辑') {
+                        url = 'record_info/update'
+                    } else url = 'record_info/update'
+                    let res = await axiosPostJSON(this.baseUrl + url, params)
                     console.log(res)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })

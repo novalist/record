@@ -10,7 +10,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/global.css">
     <title>项目管理</title>
     <style type="text/css">
-        
+        .add-form .el-form-item {
+            margin-bottom: 15px;
+        }
+        .add-form {
+            margin: 0 50px 0 20px;
+        }
     </style>
 </head>
 <body>
@@ -20,6 +25,7 @@
         <label class=".el-form-item__label">负责人：</label>
         <el-input v-model="formInline.connectName" style="width: 217px;" placeholder="负责人"></el-input>
         <el-button type="primary" @click="search">搜索</el-button>
+        <el-button type="primary" @click="newRecord">新建</el-button>
         <el-upload action="/record/project/upload"
             style="display: inline-block;"
             multiple
@@ -32,7 +38,7 @@
     </div>
     <el-table :data="list" border>
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
-        <el-table-column prop="companyName" label="企业" width="180" ></el-table-column>
+        <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
         <el-table-column prop="connectName" label="联系人" width="120" ></el-table-column>
         <el-table-column prop="connectPhone" label="号码" width="120" ></el-table-column>
         <el-table-column prop="area" label="意向区域" width="180"></el-table-column>
@@ -42,11 +48,56 @@
             <template slot-scope="{ row }">
             	<div class="action-btn">
                   	<a @click.stop="edit(row)">编辑</a>
-                    <a @click.stop="del(row)" class="red">删除</a>
+                    <a class="red" @click="openDelModal(row)">删除</a>
                 </div>
             </template>
         </el-table-column>
     </el-table>
+    <template v-if="isShow">      
+        <el-dialog
+            :visible.sync="isOpenAddModal"
+            width="500px"
+            :before-close="handleClose">
+            <span slot="title">{{addModalTitle}}</span>
+            <div>
+                <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" class="add-form">
+                    <el-form-item label="企业" prop="companyName">
+                        <el-input v-model="modalForm.companyName" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="联系人" prop="connectName">
+                        <el-input v-model="modalForm.connectName" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="号码" prop="connectPhone">
+                        <el-input v-model="modalForm.connectPhone" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="意向区域" prop="area">
+                        <el-input v-model="modalForm.area" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="项目内容" prop="content">
+                        <el-input v-model="modalForm.content" size="small"></el-input>
+                    </el-form-item>
+                    <el-form-item label="跟进" prop="detail">
+                        <el-input v-model="modalForm.detail" size="small"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeAddModal">关 闭</el-button>
+                <el-button type="primary" @click="update">更 新</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog
+          title="提示"
+          :visible.sync="isOpenDelModal"
+          width="350px">
+          <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
+          <span style="font-size: 16px;">确定删除吗</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="isOpenDelModal = false">取 消</el-button>
+            <el-button type="primary" @click="del">确 定</el-button>
+          </span>
+        </el-dialog>
+    </template>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -58,7 +109,30 @@
         el: '#main',
         data () {
             return {
-            	 isShow: false,
+                addModalTitle: '',
+                isOpenDelModal: false,
+                isOpenAddModal: false,
+                currRow: {},
+                modalForm: {
+                    companyName: '',
+                    connectName: '',
+                    connectPhone: '',
+                    content: '',
+                    area: '',
+                    detail: ''
+                },
+                rules: {
+                    companyName: [
+                        { required: true, message: '请输入企业名称', trigger: 'change' },
+                    ],
+                    connectName: [
+                        { required: true, message: '请输入联系人', trigger: 'change' }
+                    ],
+                    connectPhone: [
+                        { required: true, message: '请输入号码', trigger: 'change' }
+                    ]
+                },
+            	isShow: false,
                 formInline: {
                     connectName: ''
                 },
@@ -72,6 +146,57 @@
             this.isShow = true
         },
         methods: {
+            newRecord () {
+                this.addModalTitle = '新建'
+                this.isOpenAddModal = true
+            },
+            openDelModal (row) {
+                this.currRow = row
+                this.isOpenDelModal = true
+            },
+            async update () {
+                try {
+                    await this.$refs.modalForm.validate()
+                    let url 
+                    let params = { ...this.modalForm }
+                    if (this.addModalTitle == '编辑') {
+                        params.id = this.currRow.id
+                        url = 'project/update'
+                    } else url = 'project/insert'
+                    let res = await axiosPostJSON(this.baseUrl + url, params)
+                    console.log(res)
+                    this.closeAddModal()
+                    this.$message({ message: '保存成功！', type: 'success' })
+                    this.search()
+                } catch (err) {
+                    console.log(err)
+                    err.message && this.$message({ message: err.message, type: 'error' })
+                }
+            },
+            closeAddModal () {
+                this.modalForm = {
+                    companyName: '',
+                    connectName: '',
+                    connectPhone: '',
+                    content: '',
+                    area: '',
+                    detail: ''
+                }
+                this.$refs.modalForm.resetFields()
+                this.isOpenAddModal = false
+            },
+            handleClose(done) {
+                this.modalForm = {
+                    companyName: '',
+                    connectName: '',
+                    connectPhone: '',
+                    content: '',
+                    area: '',
+                    detail: ''
+                }
+                this.$refs.modalForm.resetFields()
+                done()
+            },
             handleFileSuccess (res, file, fileList) {
                 console.log(res)
                 if (res.code == 400) this.$message({ message: res.message, type: 'error' })
@@ -85,12 +210,21 @@
                 this.$message({ message: err, type: 'error' })
             },
             edit (row) {
+                this.addModalTitle = '编辑'
+                this.currRow = row
+                this.modalForm.companyName = row.companyName
+                this.modalForm.connectName = row.connectName
+                this.modalForm.connectPhone = row.connectPhone
+                this.modalForm.area = row.area
+                this.modalForm.detail = row.detail
+                this.modalForm.content = row.content
+                this.isOpenAddModal = true
             },
         	getTemplateDownload (params) {
 			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
             },
-            del (row) {
-                axiosPostJSON(this.baseUrl + 'project/delete', { masterName: row.masterName })
+            del () {
+                axiosPost(this.baseUrl + 'project/delete', { id: this.currRow.id })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
                         this.search()
@@ -101,7 +235,7 @@
             },
             async search () {
                 try {
-                    let res = await axiosGet(this.baseUrl + '/project/list', this.formInline)
+                    let res = await axiosGet(this.baseUrl + 'project/list', this.formInline)
                     this.list = res.content
                     console.log(this.list)
                 } catch (err) {
