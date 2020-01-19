@@ -40,16 +40,16 @@
         </el-form-item>
     </el-form>
     <el-table :data="list" border v-loading="loading" :height="tableHeight">
-        <el-table-column type="index" label="序号" width="50" ></el-table-column>
+        <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
         <el-table-column prop="regionName" label="区域" width="240" ></el-table-column>
-        <el-table-column prop="districtName" label="街道">
+        <el-table-column prop="districtName" label="街道" style="padding: 0">
         	<template slot-scope="{ row }">
               <div :class="row.districtList.length > 1 ? 'cell-line':''" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
               	{{item.regionName}}
               </div>
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" >
+        <el-table-column label="操作" width="120" style="padding: 0">
             <template slot-scope="{ row }">
              	<div v-if="!row.districtList || row.districtList.length == 0" class="action-btn"><a @click.stop="del(row.regionId)" class="red">删除</a></div>
              	<div v-else :class="row.districtList.length > 1 ? 'cell-line':''" class="action-btn" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">

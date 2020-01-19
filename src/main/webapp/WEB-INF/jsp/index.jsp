@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <title>Record Search</title>
+    <title>资源管理</title>
     <style type="text/css">
         html, body, #app {
             padding: 0;
@@ -22,16 +22,27 @@
         #app {
             display: none;
         }
+        .el-menu {
+            width: calc(100% - 60px);
+            margin-left: 60px;
+        }
+        .logo {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+        }
     </style>
 </head>
 <body>
 <div id="app">
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#252b39" text-color="#ffffff" active-text-color="#409EFF">
-        <el-menu-item style="font-size: 16px;font-weight: bold;">Record Search</el-menu-item>
-        <el-menu-item index="record_info">资源管理</el-menu-item>
-        <el-menu-item index="region">区域管理</el-menu-item>
-        <el-menu-item index="project">项目管理</el-menu-item>
-    </el-menu>
+    <div style="background-color: #252b39;">
+        <img src="${pageContext.request.contextPath}/static/img/logo.jpg" class="logo">
+        <el-menu :default-active="activeIndex" class="el-menu" mode="horizontal" @select="handleSelect" background-color="#252b39" text-color="#ffffff" active-text-color="#409EFF">
+            <el-menu-item index="record_info">资源管理</el-menu-item>
+            <el-menu-item index="region">区域管理</el-menu-item>
+            <el-menu-item index="project">项目管理</el-menu-item>
+        </el-menu>
+    </div>
     <iframe :src="src" width="100%" frameborder="0" class="iframe"></iframe>
 </div>
 </body>

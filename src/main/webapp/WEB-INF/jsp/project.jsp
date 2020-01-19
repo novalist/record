@@ -37,7 +37,7 @@
         <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
     </div>
     <el-table :data="list" border :height="tableHeight">
-        <el-table-column type="index" label="序号" width="50" ></el-table-column>
+        <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
         <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
         <el-table-column prop="connectName" label="联系人" width="120" ></el-table-column>
         <el-table-column prop="connectPhone" label="号码" width="120" ></el-table-column>

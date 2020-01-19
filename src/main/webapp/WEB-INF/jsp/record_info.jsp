@@ -95,7 +95,7 @@
         </el-form-item>
     </el-form>
     <el-table :data="list" border :height="tableHeight">
-        <el-table-column type="index" label="序号" width="50" ></el-table-column>
+        <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
         <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
         <el-table-column prop="districtName" label="街道" width="100" ></el-table-column>
         <el-table-column prop="companyName" label="企业" width="180" ></el-table-column>
@@ -157,6 +157,9 @@
                     <el-form-item label="地址" prop="address">
                         <el-input v-model="modalForm.address" size="small"></el-input>
                     </el-form-item>
+                    <el-form-item label="资源信息" prop="resource">
+                        <el-input v-model="modalForm.resource" size="small"></el-input>
+                    </el-form-item>
                     <el-form-item label="备注" prop="note">
                         <el-input v-model="modalForm.note" size="small"></el-input>
                     </el-form-item>
@@ -212,6 +215,7 @@
                     masterPhone: '',
                     slavePhone: '',
                     address: '',
+                    resource: '',
                     note: ''
                 },
                 formInline: {
@@ -272,6 +276,7 @@
                     masterPhone: '',
                     slavePhone: '',
                     address: '',
+                    resource: '',
                     note: ''
                 }
                 this.$refs.modalForm.resetFields()
@@ -285,6 +290,7 @@
                     masterName: '',
                     masterPhone: '',
                     slavePhone: '',
+                    resource: '',
                     address: '',
                     note: ''
                 }
@@ -408,6 +414,7 @@
             },
             newRecord () {
                 this.addModalTitle = '新建'
+                this.imgList = []
                 this.modalForm.regionId = this.formInline.regionId
                 this.modalForm.districtId = this.formInline.districtId
                 let region = this.regionList.find(item => item.regionId == this.formInline.regionId)
