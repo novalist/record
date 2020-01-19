@@ -141,7 +141,11 @@ public class RecordInfoController {
       msg = "上传成功！";
 
       RecordInfo recordInfo = recordInfoService.selectById(id);
-      recordInfo.setPhotos(StringUtils.hasText(recordInfo.getPhotos()) ? recordInfo.getPhotos() + "," +fileName : fileName );
+      if(StringUtils.hasText(recordInfo.getPhotos())){
+        recordInfo.setPhotos(recordInfo.getPhotos().contains(fileName) ? recordInfo.getPhotos() :recordInfo.getPhotos() + "," +fileName);
+      }else{
+        recordInfo.setPhotos(fileName);
+      }
       recordInfoService.update(recordInfo);
     }else {
       msg = "上传失败！";
