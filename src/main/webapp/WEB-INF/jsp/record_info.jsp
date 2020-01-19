@@ -62,7 +62,7 @@
     </style>
 </head>
 <body>
-<div id="main" v-if="isShow">
+<div id="main">
     <h3>资源查询</h3>
     <el-form :inline="true" :model="formInline">
         <el-form-item label="区域：" prop="regionId">
@@ -132,7 +132,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
     </el-pagination>
-    <template v-if="isShow">      
+    <template>      
         <el-dialog
             :visible.sync="isOpenAddModal"
             width="600px"
@@ -202,7 +202,6 @@
             return {
                 total: 0,
                 isOpenDelModal: false,
-                isShow: false,
                 addModalTitle: '新建',
                 currRow: {},
                 modalForm: {
@@ -242,11 +241,8 @@
         },
         mounted () {
             this.getRegionData()
-            setTimeout(() => this.isShow = true, 100)
-            this.$nextTick(() => {
-                // this.isShow = true
-                this.getTableHeight()
-            })
+            document.getElementById('main').style.display = 'inherit'
+            this.$nextTick(() => this.getTableHeight())
         },
         methods: {
             getTableHeight () {

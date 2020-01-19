@@ -19,10 +19,13 @@
         .iframe {
             height: calc(100% - 65px);
         }
+        #app {
+            display: none;
+        }
     </style>
 </head>
 <body>
-<div id="app" v-if="isShow">
+<div id="app">
     <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#252b39" text-color="#ffffff" active-text-color="#409EFF">
         <el-menu-item style="font-size: 16px;font-weight: bold;">Record Search</el-menu-item>
         <el-menu-item index="record_info">资源管理</el-menu-item>
@@ -39,13 +42,12 @@
         el: '#app',
         data () {
             return {
-                isShow: false,
                 activeIndex: 'record_info',
                 src: '${pageContext.request.contextPath}/search/record_info'
             }
         },
         mounted () {
-            setTimeout(() => this.isShow = true, 100)
+            document.getElementById('app').style.display = 'inherit'
         },
         methods: {
             handleSelect(key) {

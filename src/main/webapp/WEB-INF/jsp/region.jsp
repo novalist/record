@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-<div id="main" v-if="isShow">
+<div id="main">
     <h3>区域/街道管理</h3>
     <el-form :inline="true" :model="searchForm">
         <el-form-item label="区域：" prop="regionId">
@@ -67,7 +67,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
     </el-pagination>
-    <template v-if="isShow">      
+    <template>      
         <el-dialog
             :visible.sync="isOpenAddModal"
             width="410px"
@@ -117,7 +117,6 @@
             	regionAdding: false,
             	districtAdding: false,
             	isOpenAddModal: false,
-            	isShow: false,
             	searchForm: {
 					regionId: '',
 					pageSize: 15,
@@ -135,12 +134,9 @@
             }
         },
         mounted () {
+        	document.getElementById('main').style.display = 'inherit'
+            this.$nextTick(() => this.getTableHeight())
             this.getSelectData()
-            setTimeout(() => this.isShow = true, 100)
-            this.$nextTick(() => {
-            	// this.isShow = true
-            	this.getTableHeight()
-            })
         },
         methods: {
         	getTableHeight () {

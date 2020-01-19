@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-<div id="main" v-if="isShow">
+<div id="main">
     <h3>项目管理</h3>
     <div style="margin-bottom: 22px;">  
         <label class="el-form-item__label">负责人：</label>
@@ -62,7 +62,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
     </el-pagination>
-    <template v-if="isShow">      
+    <template>      
         <el-dialog
             :visible.sync="isOpenAddModal"
             width="500px"
@@ -143,7 +143,6 @@
                         { required: true, message: '请输入号码', trigger: 'change' }
                     ]
                 },
-            	isShow: false,
                 formInline: {
                     connectName: '',
                     pageSize: 15,
@@ -156,11 +155,8 @@
             }
         },
         mounted () {
-            setTimeout(() => this.isShow = true, 100)
-            this.$nextTick(() => {
-                // this.isShow = true
-                this.getTableHeight()
-            })
+            document.getElementById('main').style.display = 'inherit'
+            this.$nextTick(() => this.getTableHeight())
         },
         methods: {
             getTableHeight () {
