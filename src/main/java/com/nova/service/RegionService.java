@@ -14,7 +14,7 @@ public interface RegionService {
 
   List<Region> getRegionList(Integer regionId);
 
-  List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId);
+  List<Region> getRegionList(Integer regionId,Integer regionType,Integer parentId);
 
   int importRegionList(List<Region> regionList);
 

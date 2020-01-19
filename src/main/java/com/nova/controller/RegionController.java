@@ -32,13 +32,13 @@ public class RegionController {
 
   @RequestMapping("/get/info")
   public Object getInfo(@RequestParam(value = "regionId",required = false) Integer regionId,
-      @RequestParam(value = "regionType",required = false) boolean regionType,
+      @RequestParam(value = "regionType",required = false) Integer regionType,
       @RequestParam(value = "parentId",required = false) Integer parentId){
     return CommonReturnVO.suc(regionService.getRegionList(regionId,regionType,parentId));
   }
 
   @RequestMapping("/list")
-  public Object getInfo(@RequestParam(value = "regionId",required = false) Integer regionId,
+  public Object list(@RequestParam(value = "regionId",required = false) Integer regionId,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize){
 

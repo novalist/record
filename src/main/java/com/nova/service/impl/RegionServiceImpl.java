@@ -65,7 +65,7 @@ public class RegionServiceImpl implements RegionService {
   }
 
   @Override
-  public List<Region> getRegionList(Integer regionId,boolean regionType,Integer parentId) {
+  public List<Region> getRegionList(Integer regionId,Integer regionType,Integer parentId) {
     return regionDao.selectByCondition(new SearchCondition(regionId,regionType,parentId,null));
   }
 
@@ -85,7 +85,7 @@ public class RegionServiceImpl implements RegionService {
 
         SearchCondition searchCondition = new SearchCondition();
         searchCondition.setRegionName(region.getRegionName());
-        searchCondition.setRegionType(false);
+        searchCondition.setRegionType(region.getRegionType());
         List<Region> regionList1 = regionDao
             .selectByCondition(searchCondition);
 
@@ -121,10 +121,21 @@ public class RegionServiceImpl implements RegionService {
     }
     region.setDelete(false);
 
-    int regionId = regionDao.insert(region);
-    if(region.getRegionType() == 0) {
-      region.setParentId(regionId);
-      update(region);
+    SearchCondition searchCondition = new SearchCondition();
+    searchCondition.setRegionName(region.getRegionName());
+    searchCondition.setRegionType(region.getRegionType());
+    List<Region> regionList = regionDao
+        .selectByCondition(searchCondition);
+    if(!CollectionUtils.isEmpty(regionList)){
+      region = regionList.get(0);
+      region.setDelete(false);
+      regionDao.update(region);
+    }else {
+      int regionId = regionDao.insert(region);
+      if (region.getRegionType() == 0) {
+        region.setParentId(regionId);
+        update(region);
+      }
     }
     return region.getRegionId() == null ? 0 : region.getRegionId();
   }

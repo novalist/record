@@ -102,7 +102,7 @@ public class RecordInfoController {
 
     RecordInfo recordInfo = recordInfoService.selectById(id);
     recordInfo.setDelete(true);
-    return recordInfoService.update(recordInfo);
+    return CommonReturnVO.suc(recordInfoService.update(recordInfo));
   }
 
   /**

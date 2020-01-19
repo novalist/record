@@ -51,7 +51,7 @@
       <if test="key != null and key != ''">
         and ( ri.master_name like  concat(#{key}, '%') or ri.master_phone like  concat(#{key} , '%' ) or ri.slave_phone like  concat(#{key} , '%') )
       </if>
-      and ri.is_delete = 0 and r1.is_delete = 0
+      and ri.is_delete = 0 and r1.is_delete = 0 and r2.is_delete = 0
     </where>
   </select>
 

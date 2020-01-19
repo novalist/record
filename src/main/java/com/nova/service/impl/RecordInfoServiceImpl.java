@@ -6,13 +6,17 @@ import com.nova.dao.RegionDao;
 import com.nova.entity.RecordInfo;
 import com.nova.entity.Region;
 import com.nova.service.RecordInfoService;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 资源管理
@@ -65,7 +69,7 @@ public class RecordInfoServiceImpl implements RecordInfoService {
 
       RegionDao.SearchCondition searchCondition = new RegionDao.SearchCondition();
       searchCondition.setRegionName(recordInfo.getDistrictName());
-      searchCondition.setRegionType(true);
+      searchCondition.setRegionType(1);
       List<Region> regionList = regionDao
           .selectByCondition(searchCondition);
       Assert.isTrue(!CollectionUtils.isEmpty(regionList), "没有对应街道");
@@ -94,9 +98,13 @@ public class RecordInfoServiceImpl implements RecordInfoService {
     RecordInfo recordInfo = selectById(id);
 
     String photos = recordInfo.getPhotos();
-    photos.replace(photoName,"").replace(photoName + SPLIT_SEPARATE , "");
-    recordInfo.setPhotos(photos);
-    return recordInfoDao.update(recordInfo);
+    if(StringUtils.hasText(photos)) {
+      List<String> stringList = Arrays.asList(photos.split(SPLIT_SEPARATE)).stream()
+          .filter(str -> !str.equalsIgnoreCase(photoName)).collect(Collectors.toList());
+      recordInfo.setPhotos(stringList.toString().replace("[","").replace("]",""));
+      return recordInfoDao.update(recordInfo);
+    }
+    return 0;
   }
 
 }
