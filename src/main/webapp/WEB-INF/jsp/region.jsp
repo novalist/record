@@ -26,7 +26,7 @@
             </el-select>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="search">搜索</el-button>
+            <el-button type="primary" @click="search(true)">搜索</el-button>
             <el-upload action="/record/region/upload"
                 style="display: inline-block;"
                 multiple
@@ -39,7 +39,7 @@
             <el-button @click="getTemplateDownload('区域街道模版.xlsx')">模板下载</el-button>
         </el-form-item>
     </el-form>
-    <el-table :data="list" border v-loading="loading">
+    <el-table :data="list" border v-loading="loading" :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
         <el-table-column prop="regionName" label="区域" width="240" ></el-table-column>
         <el-table-column prop="districtName" label="街道">
@@ -58,7 +58,16 @@
             </template>
         </el-table-column>
     </el-table>
-     <template v-if="isShow">      
+    <el-pagination background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="searchForm.pageNum"
+        :page-sizes="[15, 30, 45, 60]"
+        :page-size="searchForm.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+    </el-pagination>
+    <template v-if="isShow">      
         <el-dialog
             :visible.sync="isOpenAddModal"
             width="410px"
@@ -102,13 +111,17 @@
         el: '#main',
         data () {
             return {
+            	total: 0,
+            	tableHeight: 0,
             	loading: false,
             	regionAdding: false,
             	districtAdding: false,
             	isOpenAddModal: false,
             	isShow: false,
             	searchForm: {
-					regionId: ''
+					regionId: '',
+					pageSize: 15,
+					pageNum: 1
             	},
                 addForm: {
                     regionId: '',
@@ -123,9 +136,24 @@
         },
         mounted () {
             this.getSelectData()
-            this.isShow = true
+            setTimeout(() => this.isShow = true, 100)
+            this.$nextTick(() => {
+            	// this.isShow = true
+            	this.getTableHeight()
+            })
         },
         methods: {
+        	getTableHeight () {
+              this.tableHeight = document.body.clientHeight - 216
+            },
+            handleSizeChange (val) {
+                this.searchForm.pageSize = val
+                this.search()
+            },
+            handleCurrentChange (val) {
+                this.searchForm.pageNum = val
+                this.search()
+            },
         	async newRegion (regionType) {
         		if (regionType == 0 && !this.addForm.regionName) {
         			this.$message({ message: '请输入区域名称', type: 'error' })
@@ -207,7 +235,7 @@
 			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
 			},
             getSelectData () {
-                axiosGet(this.baseUrl + 'region/get/info')
+                axiosGet(this.baseUrl + 'region/get/info', { regionType: 0 })
                     .then(res => {
                         this.regionList = res
                     })
@@ -223,8 +251,9 @@
                         this.$message({ message: err.message, type: 'error' })
                     })
             },
-            async search () {
+            async search (flag) {
                 try {
+                	if (flag) this.searchForm.pageNum = 1
                 	this.loading = true
                     let res = await axiosGet(this.baseUrl + 'region/list', this.searchForm)
                     this.list = res.content

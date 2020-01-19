@@ -1,9 +1,14 @@
 html, body {
+    padding: 0;
     margin: 0;
-    body: 0;
+    height: 100%;
 }
 #main {
     padding: 10px 30px;
+    height: 100%;
+}
+h3 {
+    margin: 20px 0;
 }
 .cell-line {
     height: 40px;
@@ -37,4 +42,8 @@ html, body {
 }
 .red {
     color: #dd6161;
+}
+.el-pagination {
+    text-align: right;
+    margin-top: 5px;
 }

@@ -22,9 +22,9 @@
 <div id="main" v-if="isShow">
     <h3>项目管理</h3>
     <div style="margin-bottom: 22px;">  
-        <label class=".el-form-item__label">负责人：</label>
+        <label class="el-form-item__label">负责人：</label>
         <el-input v-model="formInline.connectName" style="width: 217px;" placeholder="负责人"></el-input>
-        <el-button type="primary" @click="search">搜索</el-button>
+        <el-button type="primary" @click="search(true)">搜索</el-button>
         <el-button type="primary" @click="newRecord">新建</el-button>
         <el-upload action="/record/project/upload"
             style="display: inline-block;"
@@ -36,7 +36,7 @@
         </el-upload>
         <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
     </div>
-    <el-table :data="list" border>
+    <el-table :data="list" border :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
         <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
         <el-table-column prop="connectName" label="联系人" width="120" ></el-table-column>
@@ -53,6 +53,15 @@
             </template>
         </el-table-column>
     </el-table>
+    <el-pagination background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="formInline.pageNum"
+        :page-sizes="[15, 30, 45, 60]"
+        :page-size="formInline.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+    </el-pagination>
     <template v-if="isShow">      
         <el-dialog
             :visible.sync="isOpenAddModal"
@@ -109,6 +118,8 @@
         el: '#main',
         data () {
             return {
+                total: 0,
+                tableHeight: 0,
                 addModalTitle: '',
                 isOpenDelModal: false,
                 isOpenAddModal: false,
@@ -134,7 +145,9 @@
                 },
             	isShow: false,
                 formInline: {
-                    connectName: ''
+                    connectName: '',
+                    pageSize: 15,
+                    pageNum: 1
                 },
                 list: [],
                 regionList: [],
@@ -143,9 +156,24 @@
             }
         },
         mounted () {
-            this.isShow = true
+            setTimeout(() => this.isShow = true, 100)
+            this.$nextTick(() => {
+                // this.isShow = true
+                this.getTableHeight()
+            })
         },
         methods: {
+            getTableHeight () {
+              this.tableHeight = document.body.clientHeight - 216
+            },
+            handleSizeChange (val) {
+                this.formInline.pageSize = val
+                this.search()
+            },
+            handleCurrentChange (val) {
+                this.formInline.pageNum = val
+                this.search()
+            },
             newRecord () {
                 this.addModalTitle = '新建'
                 this.isOpenAddModal = true
@@ -233,10 +261,12 @@
                         this.$message({ message: err.message, type: 'error' })
                     })
             },
-            async search () {
+            async search (flag) {
                 try {
+                    if (flag) this.formInline.pageNum = 1
                     let res = await axiosGet(this.baseUrl + 'project/list', this.formInline)
                     this.list = res.content
+                    this.total = res.totalCount
                     console.log(this.list)
                 } catch (err) {
                     console.log(err)

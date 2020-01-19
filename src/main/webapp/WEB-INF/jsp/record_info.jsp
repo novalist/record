@@ -81,7 +81,7 @@
             <el-input v-model="formInline.key" placeholder="关键字"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="search">查询</el-button>
+            <el-button type="primary" @click="search(true)">查询</el-button>
             <el-upload action="/record/record_info/upload"
                 style="display: inline-block;"
                 multiple
@@ -94,7 +94,7 @@
             <el-button @click="getTemplateDownload('资源信息模版.xlsx')">模板下载</el-button>
         </el-form-item>
     </el-form>
-    <el-table :data="list" border>
+    <el-table :data="list" border :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" ></el-table-column>
         <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
         <el-table-column prop="districtName" label="街道" width="100" ></el-table-column>
@@ -123,6 +123,15 @@
             </template>
         </el-table-column>
     </el-table>
+    <el-pagination background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="formInline.pageNum"
+        :page-sizes="[15, 30, 45, 60]"
+        :page-size="formInline.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+    </el-pagination>
     <template v-if="isShow">      
         <el-dialog
             :visible.sync="isOpenAddModal"
@@ -191,6 +200,7 @@
         el: '#main',
         data () {
             return {
+                total: 0,
                 isOpenDelModal: false,
                 isShow: false,
                 addModalTitle: '新建',
@@ -208,7 +218,9 @@
                 formInline: {
                     regionId: '',
                     districtId: '',
-                    key: ''
+                    key: '',
+                    pageSize: 15,
+                    pageNum: 1
                 },
                 currImgUrl: '',
                 isOpenAddModal: false,
@@ -224,14 +236,30 @@
                     masterName: [
                         { required: true, message: '请输入联系人', trigger: 'change' }
                     ]
-                }
+                },
+                tableHeight: 0
             }
         },
         mounted () {
             this.getRegionData()
-            this.$nextTick(() => this.isShow = true)
+            setTimeout(() => this.isShow = true, 100)
+            this.$nextTick(() => {
+                // this.isShow = true
+                this.getTableHeight()
+            })
         },
         methods: {
+            getTableHeight () {
+              this.tableHeight = document.body.clientHeight - 216
+            },
+            handleSizeChange (val) {
+                this.formInline.pageSize = val
+                this.search()
+            },
+            handleCurrentChange (val) {
+                this.formInline.pageNum = val
+                this.search()
+            },
             openDelModal (row) {
                 this.currRow = row
                 this.isOpenDelModal = true
@@ -287,7 +315,7 @@
                 this.$message({ message: err, type: 'error' })
             },
             getDistrictList () {
-                axiosGet(this.baseUrl + 'region/get/info', { regionType:1,parentId: this.formInline.regionId })
+                axiosGet(this.baseUrl + 'region/get/info', { regionType:1, parentId: this.formInline.regionId })
                     .then(res => this.districtList = res)
                     .catch(err => {
                         this.$message({ message: err.message, type: 'error' })
@@ -295,7 +323,7 @@
                     })
             },
             getRegionData () {
-                axiosGet(this.baseUrl + 'region/get/info')
+                axiosGet(this.baseUrl + 'region/get/info', { regionType: 0 })
                     .then(res => this.regionList = res)
                     .catch(err => {
                         this.$message({ message: err.message, type: 'error' })
@@ -306,6 +334,12 @@
                 axiosPost(this.baseUrl + '/record_info/photo/delete', { id: this.currRow.id, photoName: item })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
+                        let index = this.imgList.findIndex(item1 => item == item1)
+                        this.imgList.splice(index, 1)
+                        if (this.currImgUrl == item) {
+                            if (this.imgList[index]) this.currImgUrl = this.imgList[index]
+                            else this.currImgUrl = this.imgList[0]
+                        } 
                         this.search()
                     })
                     .catch(err => {
@@ -337,6 +371,7 @@
                     let params = { ...this.modalForm }
                     if (this.addModalTitle == '编辑') {
                         url = 'record_info/update'
+                        params.id = this.currRow.id
                     } else url = 'record_info/update'
                     let res = await axiosPostJSON(this.baseUrl + url, params)
                     console.log(res)
@@ -360,15 +395,17 @@
                         this.$message({ message: err.message, type: 'error' })
                     })
             },
-            async search () {
+            async search (flag) {
                 try {
+                    if (flag) this.formInline.pageNum = 1
                     let res = await axiosGet(this.baseUrl + 'record_info/get/info', this.formInline)
                     this.list = res.content
+                    this.total = res.totalCount
                     if (this.currRow.id) {
                         let row = this.list.find(item => item.id == this.currRow.id)
                         this.currRow = row
+                        this.imgList = row.photos ? row.photos.split(',') : []
                     }
-                    console.log(this.currRow)
                 } catch (err) {
                     console.log(err)
                 }

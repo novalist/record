@@ -6,7 +6,7 @@ const encodeURIComponent = (data = {}) => {
       || typeof data[key] === 'string' 
       || typeof data[key] === 'number'
     ) {
-      if (data[key]) params.push(key + '=' + data[key])
+      if (data[key] !== '' || data[key] !== undefined) params.push(key + '=' + data[key])
     } else {
       params.push(key + '=' + JSON.stringify(data[key]))
     }
