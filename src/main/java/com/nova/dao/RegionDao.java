@@ -48,13 +48,5 @@ public interface RegionDao {
     private Integer parentId;
     private String regionName;
 
-    /**
-     * @param regionName
-     * @param regionType
-     */
-//    SearchCondition(String regionName,Boolean regionType) {
-//      this.regionName = regionName;
-//      this.regionType = regionType;
-//    }
   }
 }

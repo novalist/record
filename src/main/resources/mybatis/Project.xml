@@ -22,6 +22,7 @@
     <include refid="Base_Column_List" />
     from record.project
     where id = #{id}
+    and is_delete = 0
   </select>
 
   <select id="selectByCondition" parameterType="com.nova.dao.ProjectDao$SearchCondition" resultMap="BaseResultMap">
@@ -35,6 +36,7 @@
       <if test="connectName != null">
         and connect_name = #{connectName}
       </if>
+      and is_delete = 0
     </where>
   </select>
 

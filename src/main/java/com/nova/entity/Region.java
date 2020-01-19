@@ -25,6 +25,7 @@ public class Region extends BaseRowModel {
   /**
    * 区域名称
    */
+  @ExcelProperty(value = "区域")
   private String regionName;
 
   /**
@@ -36,6 +37,9 @@ public class Region extends BaseRowModel {
    * 是否删除
    */
   private boolean delete;
+
+  @ExcelProperty(value = "街道")
+  private String districtName;
 
   private List<Region> districtList;
 }

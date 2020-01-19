@@ -20,6 +20,7 @@
       <if test="regionId != null and regionId != 0">
         and region_id = #{regionId}
       </if>
+      and is_delete = 0
     </where>
   </select>
 
@@ -40,17 +41,16 @@
       <if test="regionName != null">
         and region_name = #{regionName}
       </if>
+      and is_delete = 0
     </where>
   </select>
 
-  <insert id="insert" parameterType="com.nova.entity.Region">
-    <selectKey resultType="java.lang.Integer" keyProperty="region_id"
-               order="AFTER">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
+  <insert id="insert" parameterType="com.nova.entity.Region" useGeneratedKeys="true" keyProperty="regionId">
     insert into record.region (region_id, parent_id, region_name , region_type , is_delete
     )
     values (#{regionId}, #{parentId}, #{regionName}, #{regionType}, #{delete})
+    ON DUPLICATE KEY UPDATE
+    region_name = #{regionName}
   </insert>
 
   <update id="update" parameterType="com.nova.entity.Region">

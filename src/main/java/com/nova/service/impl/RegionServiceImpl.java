@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 区域管理 Impl
@@ -74,7 +75,37 @@ public class RegionServiceImpl implements RegionService {
 
     int count = 0;
     for(Region region : regionList){
-      count += insert(region);
+
+      Assert.notNull(region.getRegionName(),"区域为空");
+      if(region.getRegionName().equalsIgnoreCase(region.getDistrictName())){
+        region.setRegionType(0);
+      }else {
+
+        Assert.notNull(region.getDistrictName(),"街道为空");
+
+        SearchCondition searchCondition = new SearchCondition();
+        searchCondition.setRegionName(region.getRegionName());
+        searchCondition.setRegionType(false);
+        List<Region> regionList1 = regionDao
+            .selectByCondition(searchCondition);
+
+        Integer regionId = null;
+        if(CollectionUtils.isEmpty(regionList1)) {
+          region.setRegionName(region.getRegionName());
+          region.setRegionType(0);
+          regionId = insert(region);
+        }else {
+          regionId = regionList1.get(0).getRegionId();
+        }
+
+        region.setRegionId(null);
+        region.setRegionName(region.getDistrictName());
+        region.setRegionType(1);
+        region.setParentId(regionId);
+      }
+
+      insert(region);
+      count += 1;
     }
     return count;
   }
@@ -85,11 +116,17 @@ public class RegionServiceImpl implements RegionService {
 
     Assert.notNull(region,"内容为空");
     Assert.notNull(region.getRegionName(),"名称为空");
+    if(region.getParentId() == null) {
+      region.setParentId(0);
+    }
     region.setDelete(false);
 
     int regionId = regionDao.insert(region);
-    region.setParentId(regionId);
-    return update(region);
+    if(region.getRegionType() == 0) {
+      region.setParentId(regionId);
+      update(region);
+    }
+    return region.getRegionId() == null ? 0 : region.getRegionId();
   }
 
   @Override
