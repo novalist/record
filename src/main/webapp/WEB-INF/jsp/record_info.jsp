@@ -31,7 +31,7 @@
             width: 60px;
             height: 60px;
             display: inline-block;
-            background-size: contain;
+            background-size: cover;
             border: 1px solid #DCDEE2;
             cursor: pointer;
         }
@@ -61,9 +61,16 @@
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="search">查询</el-button>
-            <el-button type="primary" @click="importFile">导入</el-button>
+            <el-upload action="/record/record_info/upload"
+                style="display: inline-block;"
+                multiple
+                :show-file-list="false"
+                :on-success="handleFileSuccess"
+                :on-error="handleFileError">
+                <el-button type="primary">导入</el-button>
+            </el-upload>
             <el-button type="primary" @click="newRecord" :disabled="!formInline.regionId || !formInline.districtId">新建</el-button>
-            <el-button @click="getTemplateDownload('resource')">模板下载</el-button>
+            <el-button @click="getTemplateDownload('资源信息模版.xlsx')">模板下载</el-button>
         </el-form-item>
     </el-form>
     <el-table :data="list" border>
@@ -125,7 +132,7 @@
                     </el-form-item>
                 </el-form>
                 <div class="img-wrapper">
-                    <div><img v-if="imgList.length > 0" :src="'/record/photo/' + currImgUrl" width="200" height="200"></div>
+                    <div><img v-if="imgList.length > 0" :src="currImgUrl" width="200" height="200"></div>
                     <template v-for="(item, index) in imgList">
                         <div :key="index" class="img-item" :class="{'active': currImgUrl == item}"
                             :style="{ 'background-image': 'url(' + item + ')' }"
@@ -202,6 +209,18 @@
                 this.$refs.modalForm.resetFields()
                 done()
             },
+            handleFileSuccess (res, file, fileList) {
+                console.log(res)
+                if (res.code == 400) this.$message({ message: res.message, type: 'error' })
+                else {
+                    this.$message({ message: '导入成功！', type: 'success' })
+                    this.search()   
+                }
+            },
+            handleFileError (err, file, fileList) {
+                console.log(err)
+                this.$message({ message: err, type: 'error' })
+            },
             handleSuccess (response, file, fileList) {
                 this.$message({ message: '上传成功！', type: 'success' })
                 this.search()
@@ -238,8 +257,8 @@
                 this.modalForm.address = row.address
                 this.modalForm.note = row.note
                 let photos = row.photos ? row.photos.split(',') : []
-                this.imgList = this.modalForm.photos.map(item => '/record/photo/' + item )
-                this.currImgUrl = photos[0]
+                this.imgList = photos.map(item => '/record/photo/' + item )
+                this.currImgUrl = '/record/photo/' + photos[0]
                 console.log(this.currImgUrl)
                 this.isOpenAddModal = true
             },
@@ -275,9 +294,6 @@
                 } catch (err) {
                     console.log(err)
                 }
-            },
-            importFile () {
-
             },
             newRecord () {
                 this.addModalTitle = '新建'

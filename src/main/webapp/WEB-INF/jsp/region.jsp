@@ -27,9 +27,16 @@
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="search">搜索</el-button>
-            <el-button type="primary" @click="importFile">导入</el-button>
+            <el-upload action="/record/region/upload"
+                style="display: inline-block;"
+                multiple
+                :show-file-list="false"
+                :on-success="handleFileSuccess"
+                :on-error="handleFileError">
+                <el-button type="primary">导入</el-button>
+            </el-upload>
             <el-button type="primary" @click="isOpenAddModal = true">新建</el-button>
-            <el-button @click="getTemplateDownload('region')">模板下载</el-button>
+            <el-button @click="getTemplateDownload('区域街道模版.xlsx')">模板下载</el-button>
         </el-form-item>
     </el-form>
     <el-table :data="list" border>
@@ -59,15 +66,25 @@
             <div class="item">
             	<span>区域</span>
             	<el-input v-model="addForm.regionName" size="small" style="width: 120px;"></el-input>
-            	<el-button @click="closeAddModal" size="small">新建</el-button>
+            	<el-button @click="closeAddModal" 
+            		type="primary" 
+            		size="small" 
+            		@click="newRegion(0)" 
+            		:disabled="!addForm.regionName" 
+            		:loading="regionAdding">新建</el-button>
             </div>
             <div class="item">
             	<span>街道</span>
             	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;">
 					<el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
 	            </el-select>
-            	<el-input v-model="addForm.districtId" size="small" style="width: 120px;"></el-input>
-            	<el-button @click="closeAddModal" size="small">新建</el-button>
+            	<el-input v-model="addForm.districtName" size="small" style="width: 120px;"></el-input>
+            	<el-button @click="closeAddModal" 
+            		size="small" 
+            		type="primary" 
+            		@click="newRegion(1)" 
+            		:disabled="!addForm.districtName || !addForm.regionId"
+            		:loading="districtAdding">新建</el-button>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeAddModal">关 闭</el-button>
@@ -85,12 +102,14 @@
         el: '#main',
         data () {
             return {
+            	regionAdding: false,
+            	districtAdding: false,
             	isOpenAddModal: false,
             	isShow: false,
                 addForm: {
                     regionId: '',
                     regionName: '',
-                    districtId: ''
+                    districtName: ''
                 },
                 list: [],
                 regionList: [],
@@ -103,11 +122,66 @@
             this.isShow = true
         },
         methods: {
-        	 handleClose(done) {
+        	async newRegion (regionType) {
+        		if (regionType == 0 && !addForm.regionName) {
+        			this.$message({ message: '请输入区域名称', type: 'error' })
+        			return
+        		} else if (regionType == 1) {
+        			if (!!addForm.parentId) {
+        				this.$message({ message: '请选择街道区域', type: 'error' })
+        				return
+        			}
+        			else if (!addForm.districtName) {
+        				this.$message({ message: '请输入街道名称', type: 'error' })
+        				return
+        			}
+        		}
+        		try {
+        			let params
+        			if (regionType == 0) {
+        				params = {
+        					parentId: 0,
+	        				regionName: this.addForm.regionName,
+	        				regionType
+        				}
+        				this.regionAdding = true
+        			} else {
+        				params = {
+        					parentId: this.addForm.regionId,
+	        				regionName: this.addForm.districtName,
+	        				regionType
+        				}
+        				this.districtAdding = true
+        			}
+        			let res = await axiosPostJSON('/region/insert', params)
+        			console.log(res)
+        			regionType == 0 ? this.regionAdding = false : this.districtAdding = false
+        			this.$message({ message: res.message, type: 'success' })
+        			if (regionType == 0) this.getSelectData()
+ 					this.search()
+        		} catch (err) {
+        			console.log(err)
+        			this.$message({ message: err.message, type: 'error' })
+        			regionType == 0 ? this.regionAdding = false : this.districtAdding = false
+        		}
+        	},
+        	handleFileSuccess (res, file, fileList) {
+                console.log(res)
+                if (res.code == 400) this.$message({ message: res.message, type: 'error' })
+                else {
+                    this.$message({ message: '导入成功！', type: 'success' })
+                    this.search()   
+                }
+            },
+            handleFileError (err, file, fileList) {
+                console.log(err)
+                this.$message({ message: err, type: 'error' })
+            },
+        	handleClose(done) {
                 this.addForm = {
                     regionId: '',
                     regionName: '',
-                    districtId: ''
+                    districtName: ''
                 }
                 done()
             },
@@ -115,7 +189,7 @@
                 this.addForm = {
                     regionId: '',
                     regionName: '',
-                    districtId: ''
+                    districtName: ''
                 }
                 this.isOpenAddModal = false
             },
@@ -147,9 +221,6 @@
                 } catch (err) {
                     console.log(err)
                 }
-            },
-            importFile () {
-
             }
         }
     })

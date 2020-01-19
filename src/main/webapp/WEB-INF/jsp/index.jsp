@@ -8,14 +8,21 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <title>Record Search</title>
     <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
         .main {
             height: calc(100vh - 101px);
+        }
+        .el-menu-item.is-active {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 <div id="app">
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#252b39" text-color="#ffffff" active-text-color="#409EFF">
         <el-menu-item style="font-size: 16px;font-weight: bold;">Record Search</el-menu-item>
         <el-menu-item index="record_info">资源管理</el-menu-item>
         <el-menu-item index="region">区域管理</el-menu-item>
