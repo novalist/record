@@ -85,8 +85,11 @@ public class RegionServiceImpl implements RegionService {
 
     Assert.notNull(region,"内容为空");
     Assert.notNull(region.getRegionName(),"名称为空");
+    region.setDelete(false);
 
-    return regionDao.insert(region);
+    int regionId = regionDao.insert(region);
+    region.setParentId(regionId);
+    return update(region);
   }
 
   @Override
