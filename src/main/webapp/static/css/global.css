@@ -52,3 +52,44 @@ h3 {
     height: 40px;
     padding: 0;
 }
+.el-tooltip__popper,
+.el-tooltip__popper.is-dark {
+  background: rgba(0, 0, 0, 0.5) !important;
+  width: 200px;
+}
+
+.el-tooltip__popper[x-placement^=top] .popper__arrow {
+  border-top-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=top] .popper__arrow:after {
+  border-top-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=left] .popper__arrow {
+  border-left-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=left] .popper__arrow:after {
+  border-left-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=right] .popper__arrow {
+  border-right-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=right] .popper__arrow:after {
+  border-right-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=bottom] .popper__arrow {
+  border-bottom-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper[x-placement^=bottom] .popper__arrow:after {
+  border-bottom-color: rgba(0, 0, 0, 0.3);
+}
+
+.el-tooltip__popper.is-dark {
+  background: rgba(70, 76, 91, .9);
+}

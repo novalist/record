@@ -59,6 +59,14 @@
         .img-item.active {
             border-color: #3d99ed;
         }
+        .line2 {
+            text-overflow: -o-ellipsis-lastline;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
     </style>
 </head>
 <body>
@@ -98,14 +106,20 @@
         <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
         <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
         <el-table-column prop="districtName" label="街道" width="100" ></el-table-column>
-        <el-table-column prop="companyName" label="企业" width="180" ></el-table-column>
+        <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
         <el-table-column prop="masterName" label="联系人" width="120" ></el-table-column>
         <el-table-column prop="masterPhone" label="联系方式1" width="120" ></el-table-column>
         <el-table-column prop="slavePhone" label="联系方式2" width="120" ></el-table-column>
-        <el-table-column prop="address" label="地址"></el-table-column>
-        <el-table-column prop="resource" label="资源信息" width="180" ></el-table-column>
-        <el-table-column prop="note" label="备注" width="180" ></el-table-column>
-        <el-table-column label="操作" width="200" >
+        <el-table-column prop="address" label="地址" width="160"></el-table-column>
+        <el-table-column prop="resource" label="资源信息" width="160" ></el-table-column>
+        <el-table-column prop="note" label="备注" minWidth="180">
+            <template slot-scope="{ row }">
+                <el-tooltip class="item" effect="dark" :content="row.note" placement="bottom-end">
+                    <div class="line2">{{row.note}}</div>
+                </el-tooltip>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160" >
             <template slot-scope="{ row }">
                 <div class="action-btn">
                     <el-upload action="/record/record_info/photo/upload"
@@ -160,7 +174,7 @@
                     <el-input v-model="modalForm.resource" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="note">
-                    <el-input v-model="modalForm.note" size="small"></el-input>
+                    <el-input v-model="modalForm.note" style="width: 200px;" size="small" type="textarea" rows="2" resize="none"></el-input>
                 </el-form-item>
             </el-form>
             <div class="img-wrapper">
