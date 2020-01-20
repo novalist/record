@@ -156,7 +156,7 @@
                 <el-form-item label="地址" prop="address">
                     <el-input v-model="modalForm.address" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="资源信息" prop="resource" v-if="addModalTitle == '新建'">
+                <el-form-item label="资源信息" prop="resource">
                     <el-input v-model="modalForm.resource" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="note">
@@ -360,6 +360,7 @@
                 this.modalForm.slavePhone = row.slavePhone
                 this.modalForm.address = row.address
                 this.modalForm.note = row.note
+                this.modalForm.resource = row.resource
                 this.imgList = row.photos ? row.photos.split(',') : []
                 this.currImgUrl = this.imgList[0]
                 this.isOpenAddModal = true
