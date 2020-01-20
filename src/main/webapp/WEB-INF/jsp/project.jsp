@@ -91,7 +91,8 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="closeAddModal">关 闭</el-button>
-            <el-button type="primary" @click="update">更 新</el-button>
+            <el-button type="primary" @click="addRecord" v-if="addModalTitle == '新建'">保存</el-button>
+            <el-button type="primary" @click="update" v-else>更 新</el-button>
         </span>
     </el-dialog>
     <el-dialog
@@ -179,14 +180,19 @@
             async update () {
                 try {
                     await this.$refs.modalForm.validate()
-                    let url 
-                    let params = { ...this.modalForm }
-                    if (this.addModalTitle == '编辑') {
-                        params.id = this.currRow.id
-                        url = 'project/update'
-                    } else url = 'project/insert'
-                    let res = await axiosPostJSON(this.baseUrl + url, params)
-                    console.log(res)
+                    let res = await axiosPostJSON(this.baseUrl + 'project/update', { ...this.modalForm, id: this.currRow.id })
+                    this.closeAddModal()
+                    this.$message({ message: '更新成功！', type: 'success' })
+                    this.search()
+                } catch (err) {
+                    console.log(err)
+                    err.message && this.$message({ message: err.message, type: 'error' })
+                }
+            },
+            async addRecord () {
+                try {
+                    await this.$refs.modalForm.validate()
+                    let res = await axiosPostJSON(this.baseUrl + 'project/insert', this.modalForm)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })
                     this.search()
