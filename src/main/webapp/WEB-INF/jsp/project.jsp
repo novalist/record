@@ -61,52 +61,50 @@
         :page-size="formInline.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
-    </el-pagination>
-    <template>      
-        <el-dialog
-            :visible.sync="isOpenAddModal"
-            width="500px"
-            :before-close="handleClose">
-            <span slot="title">{{addModalTitle}}</span>
-            <div>
-                <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" class="add-form">
-                    <el-form-item label="企业" prop="companyName">
-                        <el-input v-model="modalForm.companyName" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系人" prop="connectName">
-                        <el-input v-model="modalForm.connectName" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="号码" prop="connectPhone">
-                        <el-input v-model="modalForm.connectPhone" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="意向区域" prop="area">
-                        <el-input v-model="modalForm.area" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="项目内容" prop="content">
-                        <el-input v-model="modalForm.content" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="跟进" prop="detail">
-                        <el-input v-model="modalForm.detail" size="small"></el-input>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeAddModal">关 闭</el-button>
-                <el-button type="primary" @click="update">更 新</el-button>
-            </span>
-        </el-dialog>
-        <el-dialog
-          title="提示"
-          :visible.sync="isOpenDelModal"
-          width="350px">
-          <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
-          <span style="font-size: 16px;">确定删除吗</span>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="isOpenDelModal = false">取 消</el-button>
-            <el-button type="primary" @click="del">确 定</el-button>
-          </span>
-        </el-dialog>
-    </template>
+    </el-pagination>   
+    <el-dialog
+        :visible.sync="isOpenAddModal"
+        width="500px"
+        :before-close="handleClose">
+        <span slot="title">{{addModalTitle}}</span>
+        <div>
+            <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" class="add-form">
+                <el-form-item label="企业" prop="companyName">
+                    <el-input v-model="modalForm.companyName" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="联系人" prop="connectName">
+                    <el-input v-model="modalForm.connectName" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="号码" prop="connectPhone">
+                    <el-input v-model="modalForm.connectPhone" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="意向区域" prop="area">
+                    <el-input v-model="modalForm.area" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="项目内容" prop="content">
+                    <el-input v-model="modalForm.content" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="跟进" prop="detail">
+                    <el-input v-model="modalForm.detail" size="small"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="closeAddModal">关 闭</el-button>
+            <el-button type="primary" @click="update">更 新</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="isOpenDelModal"
+      width="350px">
+      <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
+      <span style="font-size: 16px;">确定删除吗</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isOpenDelModal = false">取 消</el-button>
+        <el-button type="primary" @click="del">确 定</el-button>
+      </span>
+    </el-dialog>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -248,6 +246,7 @@
 			    window.open('${pageContext.request.contextPath}/common/template/download?fileName=' + params, '_self')
             },
             del () {
+                this.isOpenDelModal = false
                 axiosPost(this.baseUrl + 'project/delete', { id: this.currRow.id })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })

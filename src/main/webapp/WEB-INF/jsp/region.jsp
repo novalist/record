@@ -66,40 +66,38 @@
         :page-size="searchForm.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
-    </el-pagination>
-    <template>      
-        <el-dialog
-            :visible.sync="isOpenAddModal"
-            width="410px"
-            :before-close="handleClose">
-            <span slot="title">新建</span>
-            <div class="item">
-            	<span>区域</span>
-            	<el-input v-model="addForm.regionName" size="small" style="width: 120px;margin-left: 5px;"></el-input>
-            	<el-button type="primary" 
-            		size="small" 
-            		@click="newRegion(0)" 
-            		:disabled="!addForm.regionName" 
-            		:loading="regionAdding">新建</el-button>
-            </div>
-            <div style="border-bottom: 1px solid #606266;margin-bottom: 10px;"></div>
-            <div class="item">
-            	<span>街道</span>
-            	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;margin-left: 5px;">
-					<el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
-	            </el-select>
-            	<el-input v-model="addForm.districtName" size="small" style="width: 120px;"></el-input>
-            	<el-button size="small" 
-            		type="primary" 
-            		@click="newRegion(1)" 
-            		:disabled="!addForm.districtName || !addForm.regionId"
-            		:loading="districtAdding">新建</el-button>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeAddModal">关 闭</el-button>
-            </span>
-        </el-dialog>
-    </template>
+    </el-pagination>   
+    <el-dialog
+        :visible.sync="isOpenAddModal"
+        width="410px"
+        :before-close="handleClose">
+        <span slot="title">新建</span>
+        <div class="item">
+        	<span>区域</span>
+        	<el-input v-model="addForm.regionName" size="small" style="width: 120px;margin-left: 5px;"></el-input>
+        	<el-button type="primary" 
+        		size="small" 
+        		@click="newRegion(0)" 
+        		:disabled="!addForm.regionName" 
+        		:loading="regionAdding">新建</el-button>
+        </div>
+        <div style="border-bottom: 1px solid #606266;margin-bottom: 10px;"></div>
+        <div class="item">
+        	<span>街道</span>
+        	<el-select v-model="addForm.regionId" placeholder="街道" size="small" style="width: 120px;margin-left: 5px;">
+				<el-option :label="item.regionName" :value="item.regionId" v-for="item in regionList" :key="item.regionId"></el-option>
+            </el-select>
+        	<el-input v-model="addForm.districtName" size="small" style="width: 120px;"></el-input>
+        	<el-button size="small" 
+        		type="primary" 
+        		@click="newRegion(1)" 
+        		:disabled="!addForm.districtName || !addForm.regionId"
+        		:loading="districtAdding">新建</el-button>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="closeAddModal">关 闭</el-button>
+        </span>
+    </el-dialog>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

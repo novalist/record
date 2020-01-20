@@ -132,66 +132,64 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
     </el-pagination>
-    <template>      
-        <el-dialog
-            :visible.sync="isOpenAddModal"
-            width="600px"
-            :before-close="handleClose">
-            <span slot="title">{{addModalTitle}}</span>
-            <div>
-                <span style="margin: 0 40px;">区域：{{currRow.regionName}}</span>
-                <span>街道：{{currRow.districtName}}</span>
-                <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" style="margin-top: 10px;" class="add-form">
-                    <el-form-item label="企业" prop="companyName">
-                        <el-input v-model="modalForm.companyName" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系人" prop="masterName">
-                        <el-input v-model="modalForm.masterName" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系方式1" prop="masterPhone">
-                        <el-input v-model="modalForm.masterPhone" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系方式2" prop="slavePhone">
-                        <el-input v-model="modalForm.slavePhone" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="地址" prop="address">
-                        <el-input v-model="modalForm.address" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="资源信息" prop="resource">
-                        <el-input v-model="modalForm.resource" size="small"></el-input>
-                    </el-form-item>
-                    <el-form-item label="备注" prop="note">
-                        <el-input v-model="modalForm.note" size="small"></el-input>
-                    </el-form-item>
-                </el-form>
-                <div class="img-wrapper">
-                    <img v-if="imgList.length > 0" :src="'/record/photo/'+currImgUrl" width="200" height="200">
-                    <div class="imgs">
-                        <div v-for="(item, index) in imgList" :key="index" class="img-item" :class="{'active': currImgUrl == item}"
-                            :style="{ 'background-image': 'url(/record/photo/' + item + ')' }"
-                            @click="showImg(item)">
-                            <i class="el-icon-close" @click="delImg(item)"></i>
-                        </div>
+    <el-dialog
+        :visible.sync="isOpenAddModal"
+        width="600px"
+        :before-close="handleClose">
+        <span slot="title">{{addModalTitle}}</span>
+        <div>
+            <span style="margin: 0 40px;">区域：{{currRow.regionName}}</span>
+            <span>街道：{{currRow.districtName}}</span>
+            <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" style="margin-top: 10px;" class="add-form">
+                <el-form-item label="企业" prop="companyName">
+                    <el-input v-model="modalForm.companyName" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="联系人" prop="masterName">
+                    <el-input v-model="modalForm.masterName" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式1" prop="masterPhone">
+                    <el-input v-model="modalForm.masterPhone" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式2" prop="slavePhone">
+                    <el-input v-model="modalForm.slavePhone" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="地址" prop="address">
+                    <el-input v-model="modalForm.address" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="资源信息" prop="resource" v-if="addModalTitle == '新建'">
+                    <el-input v-model="modalForm.resource" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="备注" prop="note">
+                    <el-input v-model="modalForm.note" size="small"></el-input>
+                </el-form-item>
+            </el-form>
+            <div class="img-wrapper">
+                <img v-if="imgList.length > 0" :src="'/record/photo/'+currImgUrl" width="200" height="200">
+                <div class="imgs">
+                    <div v-for="(item, index) in imgList" :key="index" class="img-item" :class="{'active': currImgUrl == item}"
+                        :style="{ 'background-image': 'url(/record/photo/' + item + ')' }"
+                        @click="showImg(item)">
+                        <i class="el-icon-close" @click="delImg(item)"></i>
                     </div>
                 </div>
             </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeAddModal">关 闭</el-button>
-                <el-button type="primary" @click="update">更 新</el-button>
-            </span>
-        </el-dialog>
-        <el-dialog
-          title="提示"
-          :visible.sync="isOpenDelModal"
-          width="350px">
-          <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
-          <span style="font-size: 16px;">确定删除吗</span>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="isOpenDelModal = false">取 消</el-button>
-            <el-button type="primary" @click="del">确 定</el-button>
-          </span>
-        </el-dialog>
-    </template>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="closeAddModal">关 闭</el-button>
+            <el-button type="primary" @click="update">更 新</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="isOpenDelModal"
+      width="350px">
+      <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
+      <span style="font-size: 16px;">确定删除吗</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isOpenDelModal = false">取 消</el-button>
+        <el-button type="primary" @click="del">确 定</el-button>
+      </span>
+    </el-dialog>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -386,7 +384,6 @@
                 }
             },
             del () {
-                console.log('currRow', this.currRow)
                 this.isOpenDelModal = true
                 axiosPost(this.baseUrl + 'record_info/delete', { id: this.currRow.id })
                     .then(res => {
