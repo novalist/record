@@ -33,7 +33,7 @@
       <if test="id != null and id != 0">
         and id = #{id}
       </if>
-      <if test="connectName != null">
+      <if test="connectName != null and connectName != ''">
         and connect_name = #{connectName}
       </if>
       and is_delete = 0
