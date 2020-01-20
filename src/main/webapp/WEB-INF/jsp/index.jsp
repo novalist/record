@@ -35,7 +35,7 @@
 </head>
 <body>
 <div id="app">
-    <div style="background-color: #252b39;">
+    <div style="background-color: #252b39;height: 60px;">
         <img src="${pageContext.request.contextPath}/static/img/logo.jpg" class="logo">
         <el-menu :default-active="activeIndex" class="el-menu" mode="horizontal" @select="handleSelect" background-color="#252b39" text-color="#ffffff" active-text-color="#409EFF">
             <el-menu-item index="record_info">资源管理</el-menu-item>
