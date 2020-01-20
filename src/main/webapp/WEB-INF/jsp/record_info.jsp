@@ -176,7 +176,8 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="closeAddModal">关 闭</el-button>
-            <el-button type="primary" @click="update">更 新</el-button>
+            <el-button type="primary" @click="addRecord" v-if="addModalTitle == '新建'">保存</el-button>
+            <el-button type="primary" @click="update" v-else>更 新</el-button>
         </span>
     </el-dialog>
     <el-dialog
@@ -315,6 +316,7 @@
                 this.$message({ message: err, type: 'error' })
             },
             getDistrictList () {
+                this.formInline.districtId = ''
                 axiosGet(this.baseUrl + 'region/get/info', { regionType:1, parentId: this.formInline.regionId })
                     .then(res => this.districtList = res)
                     .catch(err => {
@@ -368,13 +370,7 @@
             async update () {
                 try {
                     await this.$refs.modalForm.validate()
-                    let url 
-                    let params = { ...this.modalForm }
-                    if (this.addModalTitle == '编辑') {
-                        url = 'record_info/update'
-                        params.id = this.currRow.id
-                    } else url = 'record_info/update'
-                    let res = await axiosPostJSON(this.baseUrl + url, params)
+                    let res = await axiosPostJSON(this.baseUrl + 'record_info/update', { ...this.modalForm, id: this.currRow.id })
                     console.log(res)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })
@@ -384,8 +380,20 @@
                     err.message && this.$message({ message: err.message, type: 'error' })
                 }
             },
+            async addRecord () {
+                try {
+                    await this.$refs.modalForm.validate()
+                    let res = await axiosPostJSON(this.baseUrl + 'record_info/insert', this.modalForm)
+                    this.closeAddModal()
+                    this.$message({ message: '新建成功！', type: 'success' })
+                    this.search()
+                } catch (err) {
+                    console.log(err)
+                    err.message && this.$message({ message: err.message, type: 'error' })
+                }
+            },
             del () {
-                this.isOpenDelModal = true
+                this.isOpenDelModal = false
                 axiosPost(this.baseUrl + 'record_info/delete', { id: this.currRow.id })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
@@ -403,8 +411,10 @@
                     this.total = res.totalCount
                     if (this.currRow.id) {
                         let row = this.list.find(item => item.id == this.currRow.id)
-                        this.currRow = row
-                        this.imgList = row.photos ? row.photos.split(',') : []
+                        if (row && this.isOpenAddModal) {
+                            this.currRow = row
+                            this.imgList = row.photos ? row.photos.split(',') : []
+                        }
                     }
                 } catch (err) {
                     console.log(err)
