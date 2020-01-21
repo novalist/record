@@ -92,7 +92,7 @@
             <el-button type="primary" @click="search(true)">查询</el-button>
             <el-upload action="/record/record_info/upload"
                 style="display: inline-block;"
-                multiple
+                accept=".xlsx, .xls"
                 :show-file-list="false"
                 :on-success="handleFileSuccess"
                 :on-error="handleFileError">
@@ -112,7 +112,7 @@
         <el-table-column prop="slavePhone" label="联系方式2" width="120" ></el-table-column>
         <el-table-column prop="address" label="地址" width="160"></el-table-column>
         <el-table-column prop="resource" label="资源信息" width="160" ></el-table-column>
-        <el-table-column prop="note" label="备注" minWidth="180">
+        <el-table-column prop="note" label="备注" min-width="180">
             <template slot-scope="{ row }">
                 <el-tooltip class="item" effect="dark" :content="row.note" placement="bottom-end">
                     <div class="line2">{{row.note}}</div>
@@ -125,6 +125,7 @@
                     <el-upload action="/record/record_info/photo/upload"
                         style="display: inline-block;"
                         multiple
+                        accept="image/png, image/jpeg"
                         :show-file-list="false"
                         :data="{id: row.id}"
                         :on-success="handleSuccess"

@@ -29,7 +29,7 @@
             <el-button type="primary" @click="search(true)">搜索</el-button>
             <el-upload action="/record/region/upload"
                 style="display: inline-block;"
-                multiple
+                accept=".xlsx, .xls"
                 :show-file-list="false"
                 :on-success="handleFileSuccess"
                 :on-error="handleFileError">

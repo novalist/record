@@ -28,7 +28,7 @@
         <el-button type="primary" @click="newRecord">新建</el-button>
         <el-upload action="/record/project/upload"
             style="display: inline-block;"
-            multiple
+            accept=".xlsx, .xls"
             :show-file-list="false"
             :on-success="handleFileSuccess"
             :on-error="handleFileError">
