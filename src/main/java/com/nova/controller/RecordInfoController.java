@@ -100,7 +100,7 @@ public class RecordInfoController {
   @RequestMapping("/delete")
   public Object delete(@RequestParam(value = "id") Integer id){
 
-    RecordInfo recordInfo = recordInfoService.selectById(id);
+    RecordInfo recordInfo = recordInfoService.selectById(id,true);
     recordInfo.setDelete(true);
     return CommonReturnVO.suc(recordInfoService.update(recordInfo));
   }
@@ -133,23 +133,26 @@ public class RecordInfoController {
   public Object uploadPhoto(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "id") Integer id) throws IOException {
 
-    String msg = "";
-    String fileName = id + "_" +file.getOriginalFilename();
-    if (ImageUtil.upload(file, path, fileName)){
-      msg = "上传成功！";
+    synchronized (this) {
+      String msg = "";
+      String fileName = id + "_" + file.getOriginalFilename();
+      if (ImageUtil.upload(file, path, fileName)) {
+        msg = "上传成功！";
 
-      RecordInfo recordInfo = recordInfoService.selectById(id);
-      if(StringUtils.hasText(recordInfo.getPhotos())){
-        recordInfo.setPhotos(recordInfo.getPhotos().contains(fileName) ? recordInfo.getPhotos() :recordInfo.getPhotos() + "," +fileName);
-      }else{
-        recordInfo.setPhotos(fileName);
+        RecordInfo recordInfo = recordInfoService.selectById(id, false);
+        if (StringUtils.hasText(recordInfo.getPhotos())) {
+          recordInfo.setPhotos(recordInfo.getPhotos().contains(fileName) ? recordInfo.getPhotos()
+              : recordInfo.getPhotos() + "," + fileName);
+        } else {
+          recordInfo.setPhotos(fileName);
+        }
+        recordInfoService.update(recordInfo);
+      } else {
+        msg = "上传失败！";
       }
-      recordInfoService.update(recordInfo);
-    }else {
-      msg = "上传失败！";
-    }
 
-    return CommonReturnVO.suc(fileName , msg);
+      return CommonReturnVO.suc(fileName , msg);
+    }
   }
 
   /**

@@ -15,9 +15,10 @@ public interface RecordInfoService {
    * 根据主键id查找资源
    *
    * @param id 主键
+   * @param isForUpdate 是否加锁
    * @return 资源对象
    */
-  RecordInfo selectById(Integer id);
+  RecordInfo selectById(Integer id,boolean isForUpdate);
 
   /**
    * 获得资源信息列表

@@ -36,9 +36,9 @@ public class RecordApplication extends SpringBootServletInitializer {
 	public MultipartConfigElement multipartConfigElement() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		//  单个数据大小
-		factory.setMaxFileSize("4000KB");
+		factory.setMaxFileSize("4MB");
 		/// 总上传数据大小
-		factory.setMaxRequestSize("40000KB");
+		factory.setMaxRequestSize("10MB");
 		return factory.createMultipartConfig();
 	}
 

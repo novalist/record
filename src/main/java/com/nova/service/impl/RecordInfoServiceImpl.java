@@ -36,7 +36,8 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   private RegionDao regionDao;
 
   @Override
-  public RecordInfo selectById(Integer id) {
+  public RecordInfo selectById(Integer id,boolean isForUpdate) {
+
     RecordInfo recordInfo = recordInfoDao.selectById(id);
     Assert.notNull(recordInfo,"找不到对应资源记录");
     return recordInfo;
@@ -95,7 +96,7 @@ public class RecordInfoServiceImpl implements RecordInfoService {
 
   @Override
   public int deletePhoto(Integer id, String photoName) {
-    RecordInfo recordInfo = selectById(id);
+    RecordInfo recordInfo = selectById(id,true);
 
     String photos = recordInfo.getPhotos();
     if(StringUtils.hasText(photos)) {
