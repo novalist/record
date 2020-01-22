@@ -104,13 +104,13 @@
     </el-form>
     <el-table :data="list" border :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-        <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
-        <el-table-column prop="districtName" label="街道" width="100" ></el-table-column>
+        <!-- <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
+        <el-table-column prop="districtName" label="街道" width="100" ></el-table-column> -->
         <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
         <el-table-column prop="masterName" label="联系人" width="120" ></el-table-column>
         <el-table-column prop="masterPhone" label="联系方式1" width="120" ></el-table-column>
         <el-table-column prop="slavePhone" label="联系方式2" width="120" ></el-table-column>
-        <el-table-column prop="address" label="地址" width="160"></el-table-column>
+        <el-table-column prop="address" label="地址" min-width="140"></el-table-column>
         <el-table-column prop="resource" label="资源信息" width="160" ></el-table-column>
         <el-table-column prop="note" label="备注" min-width="180">
             <template slot-scope="{ row }">
@@ -179,7 +179,13 @@
                 </el-form-item>
             </el-form>
             <div class="img-wrapper">
-                <img v-if="imgList.length > 0" :src="'/record/photo/'+currImgUrl" width="200" height="200">
+                <el-popover v-if="imgList.length > 0" 
+                    placement="right"
+                    width="420"
+                    trigger="hover">
+                    <img width="400" height="400" :src="'/record/photo/'+currImgUrl" />
+                    <img slot="reference" :src="'/record/photo/'+currImgUrl" width="200" height="200">
+                </el-popover>
                 <div class="imgs">
                     <div v-for="(item, index) in imgList" :key="index" class="img-item" :class="{'active': currImgUrl == item}"
                         :style="{ 'background-image': 'url(/record/photo/' + item + ')' }"
