@@ -34,7 +34,7 @@
         and id = #{id}
       </if>
       <if test="connectName != null and connectName != ''">
-        and connect_name = #{connectName}
+        and connect_name like concat(#{connectName}, '%')
       </if>
       and is_delete = 0
     </where>
