@@ -1,6 +1,7 @@
 package com.nova.dao;
 
 import com.nova.entity.Project;
+import com.nova.entity.User;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,14 @@ public interface ProjectDao {
    * @return
    */
   int insert(Project project);
+
+  /**
+   * 新建负责人
+   *
+   * @param user
+   * @return
+   */
+  int insertUser(User user);
 
   /**
    * 更新
@@ -47,6 +56,14 @@ public interface ProjectDao {
    */
   List<Project> selectByCondition(SearchCondition searchCondition);
 
+  /**
+   * 查询负责人
+   * @param name 名字
+   *
+   * @return 列表
+   */
+  List<User> selectUser(@Param("name") String name);
+
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
@@ -55,6 +72,10 @@ public interface ProjectDao {
     private Integer id;
 
     private String connectName;
+
+    private String connectPhone;
+
+    private Integer userId;
 
   }
 }

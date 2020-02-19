@@ -6,15 +6,18 @@
     <result column="company_name" jdbcType="VARCHAR" property="companyName" />
     <result column="connect_name" jdbcType="VARCHAR" property="connectName" />
     <result column="connect_phone" jdbcType="VARCHAR" property="connectPhone" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="area" jdbcType="VARCHAR" property="area" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="is_delete" jdbcType="TINYINT" property="delete"/>
     <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="last_updated_time" jdbcType="TIMESTAMP" property="lastUpdatedTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, company_name, connect_name,connect_phone,area,content,detail,is_delete , created_time , last_updated_time
+    id, company_name, connect_name,connect_phone, status ,area,content,detail, user_id ,is_delete , created_time , last_updated_time
   </sql>
 
   <select id="selectById" resultMap="BaseResultMap">
@@ -26,17 +29,31 @@
   </select>
 
   <select id="selectByCondition" parameterType="com.nova.dao.ProjectDao$SearchCondition" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from record.project
+    select
+    p.id, company_name, connect_name,connect_phone,
+    case status
+    when 'WELL' then '优质'
+    when 'NORMAL' then '一般'
+    when 'STOP' then '暂缓'
+    when 'SUCCESS' then '成功'
+    end as status
+    ,area,content,detail, user_id , u.name ,p.is_delete , created_time , last_updated_time
+    from record.project p
+    left join record.user u on p.user_id = u.id
     <where>
       <if test="id != null and id != 0">
-        and id = #{id}
+        and p.id = #{id}
+      </if>
+      <if test="userId != null and userId != 0">
+        and p.user_id = #{userId}
       </if>
       <if test="connectName != null and connectName != ''">
         and connect_name like concat(#{connectName}, '%')
       </if>
-      and is_delete = 0
+      <if test="connectPhone != null and connectPhone != ''">
+        and connect_phone like concat(#{connectPhone}, '%')
+      </if>
+      and p.is_delete = 0
     </where>
   </select>
 
@@ -46,14 +63,26 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into record.project (
-      id, company_name, connect_name,connect_phone,area,content,detail,is_delete , created_time , last_updated_time
+      id, company_name, connect_name,connect_phone, status,area,content,detail, user_id , is_delete , created_time , last_updated_time
     )
-    values (#{id}, #{companyName}, #{connectName}, #{connectPhone}, #{area}, #{content},
-    #{detail},  #{delete} , #{createdTime} ,  now())
+    values (#{id}, #{companyName}, #{connectName}, #{connectPhone}, #{status} ,#{area}, #{content},
+    #{detail}, #{userId},  #{delete} , #{createdTime} ,  now())
     ON DUPLICATE KEY UPDATE
     connect_name = #{connectName},
-    connect_phone = #{connectPhone}, area = #{area}, content = #{content} ,
+    connect_phone = #{connectPhone}, status = #{status}, area = #{area}, content = #{content} ,
+    detail = #{detail}, user_id = #{userId} ,
     last_updated_time = now()
+  </insert>
+
+  <insert id="insertUser" parameterType="com.nova.entity.User">
+    <selectKey resultType="java.lang.Integer" keyProperty="id"
+      order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into record.user (
+      id, name, is_delete
+    )
+    values (#{id}, #{name},#{is_delete})
   </insert>
 
   <update id="update" parameterType="com.nova.entity.RecordInfo">
@@ -68,6 +97,9 @@
       <if test="connectPhone != null">
         connect_phone = #{connectPhone},
       </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
       <if test="area != null">
         area = #{area},
       </if>
@@ -77,6 +109,9 @@
       <if test="detail != null">
         detail = #{detail},
       </if>
+      <if test="userId != null">
+        user_id = #{userId},
+      </if>
       <if test="delete != null">
         is_delete = #{delete},
       </if>
@@ -84,5 +119,12 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectUser" resultType="com.nova.entity.User">
+    select * from record.user where is_delete = 0
+    <if test="name != null">
+      and name = #{name}
+    </if>
+  </select>
 
 </mapper>

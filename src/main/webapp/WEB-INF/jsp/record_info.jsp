@@ -337,7 +337,6 @@
                 this.$message({ message: err, type: 'error' })
             },
             getDistrictList () {
-                this.formInline.districtId = ''
                 axiosGet(this.baseUrl + 'region/get/info', { regionType:1, parentId: this.formInline.regionId })
                     .then(res => this.districtList = res)
                     .catch(err => {
@@ -354,6 +353,7 @@
                     })
             },
             delImg (item) {
+                this.isOpenDelModal = false
                 axiosPost(this.baseUrl + '/record_info/photo/delete', { id: this.currRow.id, photoName: item })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })

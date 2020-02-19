@@ -21,26 +21,39 @@
 <body>
 <div id="main">
     <h3>项目管理</h3>
-    <div style="margin-bottom: 22px;">  
-        <label class="el-form-item__label">负责人：</label>
-        <el-input v-model="formInline.connectName" style="width: 217px;" placeholder="负责人"></el-input>
-        <el-button type="primary" @click="search(true)">搜索</el-button>
-        <el-button type="primary" @click="newRecord">新建</el-button>
-        <el-upload action="/record/project/upload"
-            style="display: inline-block;"
-            accept=".xlsx, .xls"
-            :show-file-list="false"
-            :on-success="handleFileSuccess"
-            :on-error="handleFileError">
-            <el-button type="primary">导入</el-button>
-        </el-upload>
-        <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
+    <div style="margin-bottom: 22px;">
+        <el-form :inline="true" :model="formInline">
+            <el-form-item label="负责人：" prop="id">
+                <el-select v-model="formInline.userId" placeholder="负责人" @change="getUserList">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option :label="item.name" :value="item.id" v-for="item in userList" :key="item.id"></el-option>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item>
+                <el-input v-model="formInline.connectPhone" placeholder="号码"></el-input>
+            </el-form-item>
+
+            <el-button type="primary" @click="search(true)">搜索</el-button>
+            <el-button type="primary" @click="newRecord" :disabled="!formInline.userId">新建</el-button>
+            <el-upload action="/record/project/upload"
+                style="display: inline-block;"
+                accept=".xlsx, .xls"
+                :show-file-list="false"
+                :on-success="handleFileSuccess"
+                :on-error="handleFileError">
+                <el-button type="primary">导入</el-button>
+            </el-upload>
+            <el-button @click="getTemplateDownload('项目信息模版.xlsx')">模板下载</el-button>
+        </el-form>
     </div>
     <el-table :data="list" border :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-        <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
+        <el-table-column prop="companyName" label="名称" width="160" ></el-table-column>
         <el-table-column prop="connectName" label="联系人" width="120" ></el-table-column>
         <el-table-column prop="connectPhone" label="号码" width="120" ></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column prop="name" label="负责人"></el-table-column>
         <el-table-column prop="area" label="意向区域" width="180"></el-table-column>
         <el-table-column prop="content" label="项目内容"></el-table-column>
         <el-table-column prop="detail" label="跟进"></el-table-column>
@@ -69,7 +82,7 @@
         <span slot="title">{{addModalTitle}}</span>
         <div>
             <el-form ref="modalForm" :model="modalForm" label-width="80px" :rules="rules" class="add-form">
-                <el-form-item label="企业" prop="companyName">
+                <el-form-item label="名称" prop="companyName">
                     <el-input v-model="modalForm.companyName" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="联系人" prop="connectName">
@@ -77,6 +90,19 @@
                 </el-form-item>
                 <el-form-item label="号码" prop="connectPhone">
                     <el-input v-model="modalForm.connectPhone" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" prop="status">
+                    <el-select v-model="modalForm.status" size="small">
+                        <el-option label="优质" value="WELL"></el-option>
+                        <el-option label="一般" value="NORMAL"></el-option>
+                        <el-option label="暂缓" value="STOP"></el-option>
+                        <el-option label="成功" value="SUCCESS"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="负责人" prop="name">
+                    <el-select v-model="addForm.id" placeholder="负责人" size="small" style="width: 120px;margin-left: 5px;">
+                        <el-option :label="item.name" :value="item.id" v-for="item in userList" :key="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="意向区域" prop="area">
                     <el-input v-model="modalForm.area" size="small"></el-input>
@@ -127,13 +153,16 @@
                     companyName: '',
                     connectName: '',
                     connectPhone: '',
+                    status: '',
                     content: '',
                     area: '',
-                    detail: ''
+                    detail: '',
+                    name: '',
+                    userId: ''
                 },
                 rules: {
                     companyName: [
-                        { required: true, message: '请输入企业名称', trigger: 'change' },
+                        { required: true, message: '请输入名称', trigger: 'change' },
                     ],
                     connectName: [
                         { required: true, message: '请输入联系人', trigger: 'change' }
@@ -143,17 +172,23 @@
                     ]
                 },
                 formInline: {
-                    connectName: '',
+                    userId: '',
                     pageSize: 15,
                     pageNum: 1
                 },
+                addForm: {
+                    id: '',
+                    name: ''
+                },
                 list: [],
+                userList: [],
                 regionList: [],
                 districtList: [],
                 baseUrl: '${pageContext.request.contextPath}/'
             }
         },
         mounted () {
+            this.getUserList()
             document.getElementById('main').style.display = 'inherit'
             this.$nextTick(() => this.getTableHeight())
         },
@@ -173,6 +208,15 @@
                 this.addModalTitle = '新建'
                 this.isOpenAddModal = true
             },
+            getUserList () {
+                this.formInline.id = ''
+                axiosGet(this.baseUrl + 'project/user/list', {  })
+                .then(res => this.userList = res)
+            .catch(err => {
+                this.$message({ message: err.message, type: 'error' })
+                console.log(err)
+                })
+            },
             openDelModal (row) {
                 this.currRow = row
                 this.isOpenDelModal = true
@@ -180,6 +224,7 @@
             async update () {
                 try {
                     await this.$refs.modalForm.validate()
+                    this.modalForm.userId = this.addForm.id
                     let res = await axiosPostJSON(this.baseUrl + 'project/update', { ...this.modalForm, id: this.currRow.id })
                     this.closeAddModal()
                     this.$message({ message: '更新成功！', type: 'success' })
@@ -192,6 +237,7 @@
             async addRecord () {
                 try {
                     await this.$refs.modalForm.validate()
+                    this.modalForm.userId = this.addForm.id
                     let res = await axiosPostJSON(this.baseUrl + 'project/insert', this.modalForm)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })
@@ -206,9 +252,12 @@
                     companyName: '',
                     connectName: '',
                     connectPhone: '',
+                    status: '',
                     content: '',
                     area: '',
-                    detail: ''
+                    detail: '',
+                    userId: '',
+                    name: ''
                 }
                 this.$refs.modalForm.resetFields()
                 this.isOpenAddModal = false
@@ -218,9 +267,12 @@
                     companyName: '',
                     connectName: '',
                     connectPhone: '',
+                    status: '',
                     content: '',
                     area: '',
-                    detail: ''
+                    detail: '',
+                    userId: '',
+                    name: ''
                 }
                 this.$refs.modalForm.resetFields()
                 done()
@@ -243,8 +295,13 @@
                 this.modalForm.companyName = row.companyName
                 this.modalForm.connectName = row.connectName
                 this.modalForm.connectPhone = row.connectPhone
+                this.modalForm.status = row.status
                 this.modalForm.area = row.area
                 this.modalForm.detail = row.detail
+                this.modalForm.userId = row.userId
+                this.addForm.id = row.userId
+                this.addForm.name = row.name
+                this.modalForm.name = row.name
                 this.modalForm.content = row.content
                 this.isOpenAddModal = true
             },

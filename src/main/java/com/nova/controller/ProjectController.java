@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.nova.dao.ProjectDao.SearchCondition;
 import com.nova.entity.Project;
+import com.nova.entity.User;
 import com.nova.service.ProjectService;
 import com.nova.util.CommonReturnPageVO;
 import com.nova.util.CommonReturnVO;
@@ -35,6 +36,7 @@ public class ProjectController {
    * 项目信息列表
    *
    * @param id 主键id
+   * @param userId 负责人id
    * @param connectName 联系人
    * @param pageNum 当前页
    * @param pageSize 每页显示
@@ -42,16 +44,38 @@ public class ProjectController {
    */
   @RequestMapping("/list")
   public Object getInfo(@RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "connectName", required = false) String connectName,
+      @RequestParam(value = "userId", required = false) Integer userId,
+      @RequestParam(value = "name", required = false) String name,
+      @RequestParam(value = "connectPhone", required = false) String connectPhone,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
 
     Page<Project> page = PageHelper.startPage(pageNum,pageSize);
     List<Project> projectList = projectService
-        .selectByCondition(new SearchCondition(id ,connectName));
+        .selectByCondition(new SearchCondition(id ,name,connectPhone,userId));
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,projectList));
   }
 
+  /**
+   * 查找负责人
+   *
+   * @return 结果
+   */
+  @RequestMapping("/user/list")
+  public Object getUserList(){
+    return CommonReturnVO.suc(projectService.getUserList());
+  }
+
+  /**
+   * 新建负责人
+   *
+   * @param user 用户
+   * @return 影响行数
+   */
+  @RequestMapping("/user/insert")
+  public Object insertUser(@RequestBody User user){
+    return CommonReturnVO.suc(projectService.insertUser(user));
+  }
 
   /**
    * 新建项目

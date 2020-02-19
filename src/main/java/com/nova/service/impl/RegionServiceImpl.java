@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 区域管理 Impl
@@ -77,7 +78,7 @@ public class RegionServiceImpl implements RegionService {
     for(Region region : regionList){
 
       Assert.notNull(region.getRegionName(),"区域为空");
-      if(region.getRegionName().equalsIgnoreCase(region.getDistrictName())){
+      if(region.getRegionName().equalsIgnoreCase(region.getDistrictName()) || StringUtils.isEmpty(region.getDistrictList())) {
         region.setRegionType(0);
       }else {
 
@@ -95,7 +96,13 @@ public class RegionServiceImpl implements RegionService {
           region.setRegionType(0);
           regionId = insert(region);
         }else {
-          regionId = regionList1.get(0).getRegionId();
+          Region region1 = regionList1.get(0);
+          if(region1.isDelete()){
+            region1.setDelete(false);
+            region1.setParentId(region1.getRegionId());
+            regionDao.update(region1);
+          }
+          regionId = region1.getRegionId();
         }
 
         region.setRegionId(null);
