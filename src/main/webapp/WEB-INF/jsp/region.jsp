@@ -198,7 +198,6 @@
         		}
         	},
         	handleFileSuccess (res, file, fileList) {
-                console.log(res)
                 if (res.code == 400) this.$message({ message: res.message, type: 'error' })
                 else {
                     this.$message({ message: '导入成功！', type: 'success' })

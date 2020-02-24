@@ -111,7 +111,7 @@
         <el-table-column prop="masterPhone" label="联系方式1" width="120" ></el-table-column>
         <el-table-column prop="slavePhone" label="联系方式2" width="120" ></el-table-column>
         <el-table-column prop="address" label="地址" min-width="140"></el-table-column>
-        <el-table-column prop="resource" label="资源信息" width="160" ></el-table-column>
+        <el-table-column prop="resource" label="资源信息" min-width="160" ></el-table-column>
         <el-table-column prop="note" label="备注" min-width="180">
             <template slot-scope="{ row }">
                 <el-tooltip class="item" effect="dark" :content="row.note" placement="bottom-end">
@@ -352,22 +352,33 @@
                         console.log(err)
                     })
             },
-            delImg (item) {
-                this.isOpenDelModal = false
+            postDelImg () {
                 axiosPost(this.baseUrl + '/record_info/photo/delete', { id: this.currRow.id, photoName: item })
                     .then(res => {
-                        this.$message({ message: '删除成功！', type: 'success' })
-                        let index = this.imgList.findIndex(item1 => item == item1)
-                        this.imgList.splice(index, 1)
-                        if (this.currImgUrl == item) {
-                            if (this.imgList[index]) this.currImgUrl = this.imgList[index]
-                            else this.currImgUrl = this.imgList[0]
-                        } 
-                        this.search()
+                    this.$message({ message: '删除成功！', type: 'success' })
+                    let index = this.imgList.findIndex(item1 => item == item1)
+                    this.imgList.splice(index, 1)
+                    if (this.currImgUrl == item) {
+                        if (this.imgList[index]) this.currImgUrl = this.imgList[index]
+                        else this.currImgUrl = this.imgList[0]
+                    }
+                    this.search()
                     })
                     .catch(err => {
                         this.$message({ message: err.message, type: 'error' })
                     })
+            },
+            delImg (item) {
+                this.$confirm('确定删除？', '提示', {
+                    distinguishCancelAndClose: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                   this.postDelImg()
+                }).catch(action => {
+                    // ...
+                })
             },
             showImg (item) {
                  this.currImgUrl = item
@@ -388,11 +399,22 @@
                 this.currImgUrl = this.imgList[0]
                 this.isOpenAddModal = true
             },
-            async update () {
+            update () {
+                this.$confirm('确定更新？', '提示', {
+                    distinguishCancelAndClose: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    this.postUpdate()
+                }).catch(action => {
+                    // ...
+                })
+            },
+            async postUpdate () {
                 try {
                     await this.$refs.modalForm.validate()
                     let res = await axiosPostJSON(this.baseUrl + 'record_info/update', { ...this.modalForm, id: this.currRow.id })
-                    console.log(res)
                     this.closeAddModal()
                     this.$message({ message: '保存成功！', type: 'success' })
                     this.search()

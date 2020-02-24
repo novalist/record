@@ -16,6 +16,9 @@
         .add-form {
             margin: 0 50px 0 20px;
         }
+        .add-form .el-input{
+            width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -49,14 +52,14 @@
     </div>
     <el-table :data="list" border :height="tableHeight">
         <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-        <el-table-column prop="companyName" label="名称" width="160" ></el-table-column>
-        <el-table-column prop="connectName" label="联系人" width="120" ></el-table-column>
+        <el-table-column prop="companyName" label="名称" min-width="120" ></el-table-column>
+        <el-table-column prop="connectName" label="联系人" width="100" ></el-table-column>
         <el-table-column prop="connectPhone" label="号码" width="120" ></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
-        <el-table-column prop="name" label="负责人"></el-table-column>
-        <el-table-column prop="area" label="意向区域" width="180"></el-table-column>
-        <el-table-column prop="content" label="项目内容"></el-table-column>
-        <el-table-column prop="detail" label="跟进"></el-table-column>
+        <el-table-column prop="status" label="状态" width="100"></el-table-column>
+        <el-table-column prop="name" label="负责人" width="100"></el-table-column>
+        <el-table-column prop="area" label="意向区域" width="140"></el-table-column>
+        <el-table-column prop="content" label="项目内容" min-width="160"></el-table-column>
+        <el-table-column prop="detail" label="跟进" min-width="160"></el-table-column>
         <el-table-column label="操作" width="120" >
             <template slot-scope="{ row }">
             	<div class="action-btn">
@@ -100,7 +103,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="负责人" prop="name">
-                    <el-select v-model="addForm.id" placeholder="负责人" size="small" style="width: 120px;margin-left: 5px;">
+                    <el-select v-model="addForm.id" placeholder="负责人" size="small">
                         <el-option :label="item.name" :value="item.id" v-for="item in userList" :key="item.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -221,7 +224,19 @@
                 this.currRow = row
                 this.isOpenDelModal = true
             },
-            async update () {
+            update () {
+                this.$confirm('确定更新？', '提示', {
+                    distinguishCancelAndClose: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    this.postUpdate()
+                }).catch(action => {
+                    // ...
+                })
+            },
+            async postUpdate () {
                 try {
                     await this.$refs.modalForm.validate()
                     this.modalForm.userId = this.addForm.id
@@ -278,7 +293,6 @@
                 done()
             },
             handleFileSuccess (res, file, fileList) {
-                console.log(res)
                 if (res.code == 400) this.$message({ message: res.message, type: 'error' })
                 else {
                     this.$message({ message: '导入成功！', type: 'success' })
@@ -325,7 +339,6 @@
                     let res = await axiosGet(this.baseUrl + 'project/list', this.formInline)
                     this.list = res.content
                     this.total = res.totalCount
-                    console.log(this.list)
                 } catch (err) {
                     console.log(err)
                 }
