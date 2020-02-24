@@ -26,9 +26,10 @@ public interface RecordInfoService {
    * @param regionId 区域id
    * @param districtId 街道id
    * @param key 关键字
+   * @param status 状态
    * @return 结果
    */
-  List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key);
+  List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key,String status);
 
   /**
    * 导入文件

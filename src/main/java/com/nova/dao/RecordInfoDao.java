@@ -57,5 +57,7 @@ public interface RecordInfoDao {
     private Integer districtId;
 
     private String key;
+
+    private String status;
   }
 }

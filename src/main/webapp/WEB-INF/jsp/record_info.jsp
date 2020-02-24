@@ -175,7 +175,7 @@
                     <el-input v-model="modalForm.resource" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="note">
-                    <el-input v-model="modalForm.note" style="width: 200px;" size="small" type="textarea" rows="2" resize="none"></el-input>
+                    <el-input v-model="modalForm.note" style="width: 200px;" size="small" type="textarea" rows="3" resize="none"></el-input>
                 </el-form-item>
             </el-form>
             <div class="img-wrapper">

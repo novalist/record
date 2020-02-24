@@ -60,12 +60,13 @@ public class RecordInfoController {
   public Object getInfo(@RequestParam(value = "regionId", required = false) Integer regionId,
       @RequestParam(value = "districtId", required = false) Integer districtId,
       @RequestParam(value = "key", required = false) String key,
+      @RequestParam(value = "status", required = false) String status,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
 
     Page<RecordInfo> page = PageHelper.startPage(pageNum,pageSize);
     List<RecordInfo> recordInfoList = recordInfoService
-        .getRecordInfoList(regionId, districtId, key);
+        .getRecordInfoList(regionId, districtId, key , status);
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,recordInfoList));
   }
 
@@ -209,10 +210,11 @@ public class RecordInfoController {
   public void export(@RequestParam(value = "regionId",required = false) Integer regionId,
       @RequestParam(value = "districtId",required = false) Integer districtId,
       @RequestParam(value = "key",required = false) String key,
+      @RequestParam(value = "status",required = false) String status,
       HttpServletResponse response) throws IOException {
 
     List<RecordInfo> recordInfoList = recordInfoService
-        .getRecordInfoList(regionId, districtId, key);
+        .getRecordInfoList(regionId, districtId, key,status);
 
     String fileName = "资源管理";
 

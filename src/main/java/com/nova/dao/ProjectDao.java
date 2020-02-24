@@ -77,5 +77,7 @@ public interface ProjectDao {
 
     private Integer userId;
 
+    private String status;
+
   }
 }

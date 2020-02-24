@@ -46,13 +46,14 @@ public class ProjectController {
   public Object getInfo(@RequestParam(value = "id", required = false) Integer id,
       @RequestParam(value = "userId", required = false) Integer userId,
       @RequestParam(value = "name", required = false) String name,
+      @RequestParam(value = "status", required = false) String status,
       @RequestParam(value = "connectPhone", required = false) String connectPhone,
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
 
     Page<Project> page = PageHelper.startPage(pageNum,pageSize);
     List<Project> projectList = projectService
-        .selectByCondition(new SearchCondition(id ,name,connectPhone,userId));
+        .selectByCondition(new SearchCondition(id ,name,connectPhone,userId,status));
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,projectList));
   }
 

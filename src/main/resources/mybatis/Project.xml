@@ -53,6 +53,9 @@
       <if test="connectPhone != null and connectPhone != ''">
         and connect_phone like concat(#{connectPhone}, '%')
       </if>
+      <if test="status != null and status != ''">
+        and status= #{status}
+      </if>
       and p.is_delete = 0
     </where>
   </select>

@@ -44,8 +44,8 @@ public class RecordInfoServiceImpl implements RecordInfoService {
   }
 
   @Override
-  public List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key) {
-    return recordInfoDao.selectByCondition(new SearchCondition(regionId,districtId,key));
+  public List<RecordInfo> getRecordInfoList(Integer regionId , Integer districtId , String key , String status) {
+    return recordInfoDao.selectByCondition(new SearchCondition(regionId,districtId,key,status));
   }
 
   @Override
@@ -85,6 +85,7 @@ public class RecordInfoServiceImpl implements RecordInfoService {
     }
 
     recordInfo.setCreatedTime(new Date());
+    recordInfo.setStatus("START");
     return recordInfoDao.insert(recordInfo);
   }
 

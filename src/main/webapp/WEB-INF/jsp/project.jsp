@@ -27,9 +27,19 @@
     <div style="margin-bottom: 22px;">
         <el-form :inline="true" :model="formInline">
             <el-form-item label="负责人：" prop="id">
-                <el-select v-model="formInline.userId" placeholder="负责人" @change="getUserList">
+                <el-select v-model="formInline.userId" placeholder="负责人" @change="search(true)">
                     <el-option label="全部" value=""></el-option>
                     <el-option :label="item.name" :value="item.id" v-for="item in userList" :key="item.id"></el-option>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="formInline.status" placeholder="状态" @change="search(true)">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option label="优质" value="WELL"></el-option>
+                    <el-option label="一般" value="NORMAL"></el-option>
+                    <el-option label="暂缓" value="STOP"></el-option>
+                    <el-option label="成功" value="SUCCESS"></el-option>
                 </el-select>
             </el-form-item>
 
@@ -38,7 +48,7 @@
             </el-form-item>
 
             <el-button type="primary" @click="search(true)">搜索</el-button>
-            <el-button type="primary" @click="newRecord" :disabled="!formInline.userId">新建</el-button>
+            <el-button type="primary" @click="newRecord">新建</el-button>
             <el-upload action="/record/project/upload"
                 style="display: inline-block;"
                 accept=".xlsx, .xls"
@@ -55,12 +65,12 @@
         <el-table-column prop="companyName" label="名称" min-width="120" ></el-table-column>
         <el-table-column prop="connectName" label="联系人" width="100" ></el-table-column>
         <el-table-column prop="connectPhone" label="号码" width="120" ></el-table-column>
-        <el-table-column prop="status" label="状态" width="100"></el-table-column>
-        <el-table-column prop="name" label="负责人" width="100"></el-table-column>
-        <el-table-column prop="area" label="意向区域" width="140"></el-table-column>
-        <el-table-column prop="content" label="项目内容" min-width="160"></el-table-column>
-        <el-table-column prop="detail" label="跟进" min-width="160"></el-table-column>
-        <el-table-column label="操作" width="120" >
+        <el-table-column prop="status" label="状态" width="80"></el-table-column>
+        <el-table-column prop="name" label="负责人" width="80"></el-table-column>
+        <el-table-column prop="area" label="意向区域" width="150"></el-table-column>
+        <el-table-column prop="content" label="项目内容"></el-table-column>
+        <el-table-column prop="detail" label="跟进"></el-table-column>
+        <el-table-column label="操作" width="90" >
             <template slot-scope="{ row }">
             	<div class="action-btn">
                   	<a @click.stop="edit(row)">编辑</a>
@@ -176,6 +186,7 @@
                 },
                 formInline: {
                     userId: '',
+                    status: '',
                     pageSize: 15,
                     pageNum: 1
                 },

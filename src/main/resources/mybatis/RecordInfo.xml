@@ -16,13 +16,14 @@
     <result column="resource" jdbcType="VARCHAR" property="resource" />
     <result column="note" jdbcType="VARCHAR" property="note" />
     <result column="photos" jdbcType="VARCHAR" property="photos" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="is_delete" jdbcType="TINYINT" property="delete"/>
     <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="last_updated_time" jdbcType="TIMESTAMP" property="lastUpdatedTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, company_name, ri.region_id, r1.region_name, ri.district_id, r2.region_name as district_name, master_name, master_phone,
-    slave_name, slave_phone, address , resource , note , photos , ri.is_delete , created_time , last_updated_time
+    slave_name, slave_phone, address , resource , note , photos , status , ri.is_delete , created_time , last_updated_time
   </sql>
 
   <select id="selectById" resultMap="BaseResultMap">
@@ -51,6 +52,9 @@
       <if test="key != null and key != ''">
         and ( ri.master_name like  concat(#{key}, '%') or ri.master_phone like  concat(#{key} , '%' ) or ri.slave_phone like  concat(#{key} , '%') )
       </if>
+      <if test="status != null">
+        and ri.status = #{status}
+      </if>
       and ri.is_delete = 0 and r1.is_delete = 0 and r2.is_delete = 0
     </where>
   </select>
@@ -61,14 +65,14 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into record.record_info (id, company_name, region_id, district_id, master_name, master_phone,
-    slave_name, slave_phone, address , resource , note , photos , is_delete , created_time , last_updated_time
+    slave_name, slave_phone, address , resource , note , photos , status , is_delete , created_time , last_updated_time
     )
     values (#{id}, #{companyName}, #{regionId}, #{districtId}, #{masterName}, #{masterPhone},
-    #{slaveName}, #{slavePhone}, #{address} , #{resource} ,#{note} , #{photos} , #{delete} , #{createdTime} ,  now())
+    #{slaveName}, #{slavePhone}, #{address} , #{resource} ,#{note} , #{photos} , #{status} , #{delete} , #{createdTime} ,  now())
     ON DUPLICATE KEY UPDATE
     master_name = #{masterName}, master_phone = #{masterPhone},
     slave_name = #{slaveName}, slave_phone = #{slavePhone}, address = #{address} , resource = #{resource} ,
-    note = #{note} ,
+    note = #{note} , status = #{status}
     last_updated_time = now()
   </insert>
 
@@ -98,6 +102,9 @@
       </if>
       <if test="photos != null">
         photos = #{photos},
+      </if>
+      <if test="status != null">
+        status = #{status},
       </if>
       <if test="delete != null">
         is_delete = #{delete},

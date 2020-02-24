@@ -56,7 +56,11 @@ public class RecordInfo extends BaseRowModel {
   private String photos;
 
   @ExcelIgnore
+  private String status;
+
+  @ExcelIgnore
   private boolean delete;
+
 
   @ExcelIgnore
   private Date createdTime;
