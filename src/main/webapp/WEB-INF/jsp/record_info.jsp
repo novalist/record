@@ -85,6 +85,13 @@
                 <el-option :label="item.regionName" :value="item.regionId" v-for="item in districtList" :key="item.regionId"></el-option>
             </el-select>
         </el-form-item>
+        <el-form-item label="状态" prop="status">
+            <el-select v-model="formInline.status" placeholder="状态" @change="search(true)">
+                <el-option label="全部" value=""></el-option>
+                <el-option label="交易" value="START"></el-option>
+                <el-option label="非交易" value="CLOSE"></el-option>
+            </el-select>
+        </el-form-item>
         <el-form-item>
             <el-input v-model="formInline.key" placeholder="关键字"></el-input>
         </el-form-item>
@@ -107,19 +114,25 @@
         <!-- <el-table-column prop="regionName" label="区域" width="100" ></el-table-column>
         <el-table-column prop="districtName" label="街道" width="100" ></el-table-column> -->
         <el-table-column prop="companyName" label="企业" width="160" ></el-table-column>
-        <el-table-column prop="masterName" label="联系人" width="120" ></el-table-column>
+        <el-table-column prop="masterName" label="联系人" width="80" ></el-table-column>
         <el-table-column prop="masterPhone" label="联系方式1" width="120" ></el-table-column>
-        <el-table-column prop="slavePhone" label="联系方式2" width="120" ></el-table-column>
-        <el-table-column prop="address" label="地址" min-width="140"></el-table-column>
-        <el-table-column prop="resource" label="资源信息" min-width="160" ></el-table-column>
-        <el-table-column prop="note" label="备注" min-width="180">
+        <el-table-column prop="slavePhone" label="联系方式2" width="90" ></el-table-column>
+        <el-table-column prop="address" label="地址" min-width="90"></el-table-column>
+        <el-table-column prop="status" label="状态" width="50">
+            <template scope="scope">
+                <p v-if="scope.row.status=='START'">交易</p>
+                <p v-if="scope.row.status=='CLOSE'">非交易</p>
+            </template>
+        </el-table-column>
+        <el-table-column prop="resource" label="资源信息" min-width="120" ></el-table-column>
+        <el-table-column prop="note" label="备注" width="120">
             <template slot-scope="{ row }">
                 <el-tooltip class="item" effect="dark" :content="row.note" placement="bottom-end">
                     <div class="line2">{{row.note}}</div>
                 </el-tooltip>
             </template>
         </el-table-column>
-        <el-table-column label="操作" width="160" >
+        <el-table-column label="操作" width="150" >
             <template slot-scope="{ row }">
                 <div class="action-btn">
                     <el-upload action="/record/record_info/photo/upload"
@@ -174,8 +187,14 @@
                 <el-form-item label="资源信息" prop="resource">
                     <el-input v-model="modalForm.resource" size="small"></el-input>
                 </el-form-item>
+                <el-form-item label="状态" prop="status">
+                    <el-select v-model="modalForm.status" placeholder="状态">
+                        <el-option label="交易" value="START"></el-option>
+                        <el-option label="非交易" value="CLOSE"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="备注" prop="note">
-                    <el-input v-model="modalForm.note" style="width: 200px;" size="small" type="textarea" rows="3" resize="none"></el-input>
+                    <el-input v-model="modalForm.note" style="width: 200px;" size="small" type="textarea" rows="2" resize="none"></el-input>
                 </el-form-item>
             </el-form>
             <div class="img-wrapper">
@@ -236,11 +255,13 @@
                     slavePhone: '',
                     address: '',
                     resource: '',
+                    status: '',
                     note: ''
                 },
                 formInline: {
                     regionId: '',
                     districtId: '',
+                    status: '',
                     key: '',
                     pageSize: 15,
                     pageNum: 1
@@ -297,6 +318,7 @@
                     slavePhone: '',
                     address: '',
                     resource: '',
+                    status: '',
                     note: ''
                 }
                 this.$refs.modalForm.resetFields()
@@ -312,6 +334,7 @@
                     slavePhone: '',
                     resource: '',
                     address: '',
+                    status: '',
                     note: ''
                 }
                 this.$refs.modalForm.resetFields()
@@ -352,8 +375,8 @@
                         console.log(err)
                     })
             },
-            postDelImg () {
-                axiosPost(this.baseUrl + '/record_info/photo/delete', { id: this.currRow.id, photoName: item })
+            postDelImg (item) {
+                axiosPost(this.baseUrl + 'record_info/photo/delete', { id: this.currRow.id, photoName: item })
                     .then(res => {
                     this.$message({ message: '删除成功！', type: 'success' })
                     let index = this.imgList.findIndex(item1 => item == item1)
@@ -375,7 +398,7 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                   this.postDelImg()
+                   this.postDelImg(item)
                 }).catch(action => {
                     // ...
                 })
@@ -393,6 +416,7 @@
                 this.modalForm.masterPhone = row.masterPhone
                 this.modalForm.slavePhone = row.slavePhone
                 this.modalForm.address = row.address
+                this.modalForm.status = row.status
                 this.modalForm.note = row.note
                 this.modalForm.resource = row.resource
                 this.imgList = row.photos ? row.photos.split(',') : []

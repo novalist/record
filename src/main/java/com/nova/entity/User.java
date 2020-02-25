@@ -15,6 +15,8 @@ public class User {
 
   private String name;
 
+  private String password;
+
   private boolean is_delete;
 
 }

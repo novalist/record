@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -167,7 +168,8 @@ public class RecordInfoController {
   public Object deletePhoto(@RequestParam(value = "id") Integer id,
       @RequestParam(value = "photoName") String photoName){
 
-    return CommonReturnVO.suc(recordInfoService.deletePhoto(id,photoName));
+    Assert.notNull(photoName,"删除照片为空");
+    return CommonReturnVO.suc(recordInfoService.deletePhoto(id,photoName.replace(" ","")));
   }
 
   /**
