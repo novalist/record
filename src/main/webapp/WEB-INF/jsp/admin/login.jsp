@@ -95,6 +95,7 @@
             position:relative;
             font-size: 14px;
             margin-bottom: 20px;
+            width: 300px;
         }
         .content form .form-group .icon{
             color:#999;
@@ -107,6 +108,7 @@
             height: 40px;
             font-size: 14px;
             padding-left: 36px;
+            width: 300px;
         }
         .content form #btn-login{
             background-color:#3d99ed;
@@ -128,9 +130,6 @@
 </head>
 <body class="login-body">
 <div class="content">
-    <div class="login-header">
-        <img src="${pageContext.request.contextPath}/static/img/logo.png" alt="Logo" id="logo">
-    </div>
     <form action="record/admin/login" method="post" class="form-login">
         <p class="end">
             <span class="title-span">账号登录</span>
@@ -150,7 +149,5 @@
 <div class="footer">
     <p>有限公司</p>
 </div>
-<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/common.js"></script>
 </body>
 </html>
