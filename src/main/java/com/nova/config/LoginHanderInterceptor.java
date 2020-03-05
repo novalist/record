@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author hzhang1
  * @date 2020-02-24
- * @description ${description}
- * @Version 1.0
  */
 public class LoginHanderInterceptor implements HandlerInterceptor {
   @Override
