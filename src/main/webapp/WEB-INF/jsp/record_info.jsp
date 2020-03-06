@@ -86,8 +86,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-            <el-select v-model="formInline.status" placeholder="状态" @change="search(true)">
-                <el-option label="全部" value=""></el-option>
+            <el-select v-model="formInline.status" placeholder="交易" @change="search(true)">
                 <el-option label="交易" value="START"></el-option>
                 <el-option label="非交易" value="CLOSE"></el-option>
             </el-select>
@@ -118,7 +117,7 @@
         <el-table-column prop="masterPhone" label="联系方式1" width="120" ></el-table-column>
         <el-table-column prop="slavePhone" label="联系方式2" width="90" ></el-table-column>
         <el-table-column prop="address" label="地址" min-width="90"></el-table-column>
-        <el-table-column prop="status" label="状态" width="50">
+        <el-table-column prop="status" label="状态" width="70">
             <template scope="scope">
                 <p v-if="scope.row.status=='START'">交易</p>
                 <p v-if="scope.row.status=='CLOSE'">非交易</p>
@@ -261,7 +260,7 @@
                 formInline: {
                     regionId: '',
                     districtId: '',
-                    status: '',
+                    status: 'START',
                     key: '',
                     pageSize: 15,
                     pageNum: 1
@@ -469,6 +468,13 @@
                     .catch(err => {
                         this.$message({ message: err.message, type: 'error' })
                     })
+            },
+            async exportContent () {
+              try {
+                let res = await axiosGet(this.baseUrl + 'record_info/export', this.formInline)
+              } catch (err) {
+                console.log(err)
+              }
             },
             async search (flag) {
                 try {

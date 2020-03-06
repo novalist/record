@@ -41,7 +41,6 @@
             <el-menu-item index="record_info">资源管理</el-menu-item>
             <el-menu-item index="region">区域管理</el-menu-item>
             <el-menu-item index="project">项目管理</el-menu-item>
-            <a href="admin/logout">退出</a>
         </el-menu>
     </div>
     <iframe :src="src" width="100%" frameborder="0" class="iframe"></iframe>

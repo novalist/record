@@ -2,6 +2,7 @@ package com.nova.controller;
 
 import com.nova.dao.ProjectDao;
 import com.nova.entity.User;
+import com.nova.util.CommonReturnVO;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,9 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -34,21 +35,24 @@ public class LoginController{
   }
 
   //登陆
-  @PostMapping(value = "login")
-  public String login(@RequestParam("username") String username,
-      @RequestParam("password") String password, HttpServletRequest request,HttpSession session){
+  @RequestMapping(value = "login")
+  @ResponseBody
+  public Object login(@RequestBody User user1,HttpServletRequest request,HttpSession session){
 
-    Assert.notNull(username,"用户名为空");
-    List<User> users = projectDao.selectUser(username);
+    Assert.notNull(user1.getName(),"用户名为空");
+    List<User> users = projectDao.selectUser(user1.getName());
 
     if (!CollectionUtils.isEmpty(users)){
       User user = users.get(0);
+      if(!user.getPassword().equalsIgnoreCase(user1.getPassword())){
+        return CommonReturnVO.fail("密码错误");
+      }
       session.setAttribute("loginUser",user);
-      session.setMaxInactiveInterval(10);
-      return "record_info";
+      session.setMaxInactiveInterval(500);
+      return CommonReturnVO.suc();
     }else {
       request.setAttribute("msg","用户名或密码错误");
-      return "admin/login";
+      return CommonReturnVO.fail("用户名或密码错误");
     }
 
   }

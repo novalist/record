@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -209,6 +210,7 @@ public class RecordInfoController {
    * @throws IOException
    */
   @RequestMapping("/export")
+  @ResponseBody
   public void export(@RequestParam(value = "regionId",required = false) Integer regionId,
       @RequestParam(value = "districtId",required = false) Integer districtId,
       @RequestParam(value = "key",required = false) String key,

@@ -1,153 +1,138 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>登陆</title>
-    <link href="${pageContext.request.contextPath}/static/images/gyc_icon.ico" rel="shortcut icon" />
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/bootstrap.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>项目管理</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/global.css">
-    <link href="https://at.alicdn.com/t/font_559102_e1m7ym09tore8kt9.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
+    <script type="text/javascript">
+      var _topWin = window;
+      while (_topWin != _topWin.parent.window) {
+        _topWin = _topWin.parent.window;
+      }
+      if (window != _topWin)_topWin.document.location.href = '${pageContext.request.contextPath}/admin/login';
+    </script>
     <style type="text/css">
-        html,body{
-            background-color:#eeeeee;
+        body{
+            background: url(./login-bkg.png) repeat;
+            height:100%;
+            background: -webkit-linear-gradient(left top,#F2F2F2,#F4F4F4);
+            background: -o-linear-gradient(bottom right,#F2F2F2,#F4F4F4);
+            background: -moz-linear-gradient(bottom right,#F2F2F2,#F4F4F4);
+            background: linear-gradient(to bottom right,#F2F2F2,#F4F4F4);
+            font-family: 'Aria','Microsoft YaHei','微软雅黑','黑体';
         }
-        .login-body{
-            margin:0;
-            padding:0;
-        }
-        a,a:hover{
-            text-decoration:none;
-        }
-        .login-body .content{
-            width:100%;
-            height:718px;
-            background-size:cover;
-            background-color:#2589FF;
-            background-position:center top;
-            background-repeat:no-repeat;
-            background-image:url('${pageContext.request.contextPath}/static/images/login-bk.jpg');
+        .login{
+            padding: 0;
             position:relative;
-            margin-bottom: 22px;
-        }
-        .login-body .footer{
-            text-align:center;
-            font-size: 12px;
-            color:#7d8997;
-        }
-        .content .login-header{
-            width:76%;
-            height:55px;
+            top:150px;
             margin: 0 auto;
-            padding:8px 20px;
-            background-color: transparent;
+            width: 450px;
         }
-        .content .login-header img{
-            transform:scale(1.3);
-            -webkit-transform:scale(1.3);
-            -moz-transform:scale(1.3);
-            -o-transform:scale(1.3);
+        .login-error{
+            position: relative;
+            width: 290px;
+            height: 40px;
+            top: -10px;
+            display: none;
         }
-        .content  form{
-            width: 350px;
-            min-height: 424px;
-            padding: 42px 25px 54px;
-            position:absolute;
-            top:50%;
-            left: 60%;
-            transform:translateY(-50%);
-            background-color:#fff;
+        .form-login{
+            width:430px;
+            background: #fff;
+            margin: 0 auto;
+            box-shadow:0 0 5px #ccc;
+            border-radius: 5px;
+            padding: 15px 0;
         }
-        .content form .end{
-            width:100%;
+        .form-title{
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .form-login .lq-form-group {
+            padding: 0 70px;
+        }
+        input[type=submit]{
+            width: 100%;
+            height: 40px;
             font-size: 16px;
-            position:relative;
-            margin-bottom: 44px;
         }
-        .content form .end .title-span{
-            color:#2d2f33;
-        }
-        .content form .end .title-a{
-            font-size: 14px;
-            position:absolute;
-            right: 3px;
-            top: 2px;
-        }
-        .content form .end .check {
-            font-size:14px;
-        }
-        .content form .end .check .icon{
-            font-size: 14px;
-            margin-right: 5px;
-        }
-        .content form .end .error{
-            color:#f00;
-            font-size:12px;
-            position:absolute;
-            bottom: -28px;
-            left:0;
-            display:none;
-        }
-        .content form .form-group {
-            position:relative;
-            font-size: 14px;
+        input[type=text],input[type=password]{
+            display: inline-block;
             margin-bottom: 20px;
-            width: 300px;
-        }
-        .content form .form-group .icon{
-            color:#999;
-            font-size:24px;
-            position: absolute;
-            left: 5px;
-            top: 2px;
-        }
-        .content form .form-group .form-control{
             height: 40px;
-            font-size: 14px;
-            padding-left: 36px;
-            width: 300px;
+            width: 290px;
         }
-        .content form #btn-login{
-            background-color:#3d99ed;
-            color:#fff;
-            margin-top: 10px;
-            margin-bottom: 18px;
-            width:100%;
-            height: 40px;
-            border-color: #3d99ed;
-        }
-    </style>
-    <style type="text/css">
-        @media screen and (max-width:1440px) {
-            .login-body .content{
-                height: 538px;
-            }
+        .form-title {
+            color: #5b5959;
         }
     </style>
 </head>
-<body class="login-body">
-<div class="content">
-    <form action="record/admin/login" method="post" class="form-login">
-        <p class="end">
-            <span class="title-span">账号登录</span>
-            <span class="error login-error">${error}</span>
-        </p>
-        <div class="form-group">
-            <i class="iconfont icon-msnui-tel icon"></i>
-            <input type="text" class="form-control required" name="username" errorTitle="用户名" autocomplete="new-password" placeholder="请输入用户名">
+<body >
+<div class="navbar navbar-inverse">
+</div>
+<div class="login">
+    <form method="post" class="form-login">
+        <h2  class="form-title">项目管理入口</h2>
+        <div class="lq-alert lq-alert-danger login-error">
+            <p><i class="fa fa-warning"></i><span class="lq-alert-content"></span></p>
         </div>
-        <div class="form-group">
-            <i class="iconfont icon-mima icon"></i>
-            <input type="password" class="form-control required" autocomplete="new-password" errorTitle="密码" name="password" placeholder="请输入密码">
+        <div class="lq-form-group">
+            <input type="text" name="username" placeholder="请输入用户名" class="lq-form-control" id="username">
         </div>
-        <input type="submit" class="btn btn-primary" id="btn-login" value="登录">
+        <div class="lq-form-group">
+            <input type="password" name="password" placeholder="请输入密码" class="lq-form-control" id="password">
+        </div>
+        <div class="lq-form-group">
+            <input type="submit" value="登录" class="lq-btn lq-btn-sm btn-success btn-login"/>
+        </div>
     </form>
 </div>
-<div class="footer">
-    <p>有限公司</p>
-</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".btn-login").on("click",function(e){
+      e.preventDefault();
+      name=$.trim($("#username").val());
+      password=$.trim($("#password").val());
+      if(name == ''){
+        alert("请输入账号！");
+        return;
+      }
+
+      if(password == ''){
+        alert("请输入密码！");
+        return;
+      }
+
+      var data={
+        name:name,
+        password:password
+      }
+      data=JSON.stringify(data);
+      $.ajax({
+        url:'${pageContext.request.contextPath}/admin/login',
+        type:'POST',
+        dataType:'json',
+        contentType:'application/json',
+        data:data,
+        success:function(res){
+          console.log(res);
+          if(res.code=="200"){
+              window.location.href="${pageContext.request.contextPath}/";
+          }else{
+            alert(res.message);
+          }
+        },
+        error:function(err){
+          alert(err);
+        }
+      })
+    })
+  })
+</script>
 </body>
 </html>
