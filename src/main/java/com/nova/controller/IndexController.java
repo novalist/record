@@ -1,5 +1,6 @@
 package com.nova.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
 
   @RequestMapping("/")
-  String index() {
+  String index(HttpServletRequest request) {
+    Object loginUser = request.getSession().getAttribute("loginUser");
+    request.setAttribute("user",loginUser);
     return "index";
   }
 

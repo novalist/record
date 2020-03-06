@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%><!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ page import="com.nova.entity.User" %>
+<%
+    User user = (User)request.getAttribute("user"); %><!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -41,6 +44,8 @@
             <el-menu-item index="record_info">资源管理</el-menu-item>
             <el-menu-item index="region">区域管理</el-menu-item>
             <el-menu-item index="project">项目管理</el-menu-item>
+            <el-menu-item index=""><%=user.getName() %></el-menu-item>
+            <el-menu-item><a href="${pageContext.request.contextPath}/admin/logout">退出</a></el-menu-item>
         </el-menu>
     </div>
     <iframe :src="src" width="100%" frameborder="0" class="iframe"></iframe>
@@ -63,7 +68,14 @@
         methods: {
             handleSelect(key) {
                 console.log(key)
-                this.src = '${pageContext.request.contextPath}/search/' + key
+                if(key =='')
+                  return;
+
+                if(key == 'logout'){
+                  this.src = '${pageContext.request.contextPath}/admin/logout'
+                }else{
+                  this.src = '${pageContext.request.contextPath}/search/' + key
+                }
             }
         }
     })
