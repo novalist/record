@@ -51,22 +51,22 @@
         </el-table-column>
         <el-table-column label="操作" width="120" style="padding: 0">
             <template slot-scope="{ row }">
-             	<div v-if="!row.districtList || row.districtList.length == 0" class="action-btn"><a @click.stop="del(row.regionId)" class="red">删除</a></div>
+             	<div v-if="!row.districtList || row.districtList.length == 0" class="action-btn"><a @click.stop="openDelModal(row.regionId)" class="red">删除</a></div>
              	<div v-else :class="row.districtList.length > 1 ? 'cell-line':''" class="action-btn" v-for="(item, index2) in row.districtList" :key="row.regionId+ '_' + index2">
-              		<a @click.stop="del(item.regionId)" class="red">删除</a>
+              		<a @click.stop="openDelModal(item.regionId)" class="red">删除</a>
              	</div>
             </template>
         </el-table-column>
     </el-table>
-    <el-pagination background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="searchForm.pageNum"
-        :page-sizes="[15, 30, 45, 60]"
-        :page-size="searchForm.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
-    </el-pagination>   
+    <%--<el-pagination background--%>
+        <%--@size-change="handleSizeChange"--%>
+        <%--@current-change="handleCurrentChange"--%>
+        <%--:current-page="searchForm.pageNum"--%>
+        <%--:page-sizes="[15, 30, 45, 60]"--%>
+        <%--:page-size="searchForm.pageSize"--%>
+        <%--layout="total, sizes, prev, pager, next, jumper"--%>
+        <%--:total="total">--%>
+    <%--</el-pagination>   --%>
     <el-dialog
         :visible.sync="isOpenAddModal"
         width="410px"
@@ -98,6 +98,17 @@
             <el-button @click="closeAddModal">关 闭</el-button>
         </span>
     </el-dialog>
+    <el-dialog
+            title="提示"
+            :visible.sync="isOpenDelModal"
+            width="350px">
+        <i class="el-icon-warning-outline" style="color: rgb(255, 153, 0);font-weight: bold;font-size: 18px;"></i>
+        <span style="font-size: 16px;">确定删除吗</span>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="isOpenDelModal = false">取 消</el-button>
+        <el-button type="primary" @click="del">确 定</el-button>
+      </span>
+    </el-dialog>
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -112,6 +123,7 @@
             	total: 0,
             	tableHeight: 0,
             	loading: false,
+                isOpenDelModal: false,
             	regionAdding: false,
             	districtAdding: false,
             	isOpenAddModal: false,
@@ -234,8 +246,13 @@
                     })
                     .catch(err => console.log(err))
             },
-            del (regionId) {
-                axiosPostJSON(this.baseUrl + 'region/delete', { regionId })
+            openDelModal (regionId) {
+              this.regionId = regionId
+              this.isOpenDelModal = true
+            },
+            del () {
+                this.isOpenDelModal = false
+                axiosPostJSON(this.baseUrl + 'region/delete', { regionId: this.regionId })
                     .then(res => {
                         this.$message({ message: '删除成功！', type: 'success' })
                         this.search()

@@ -48,7 +48,7 @@ public class LoginController{
         return CommonReturnVO.fail("密码错误");
       }
       session.setAttribute("loginUser",user);
-      session.setMaxInactiveInterval(500);
+      session.setMaxInactiveInterval(-1);
       return CommonReturnVO.suc();
     }else {
       request.setAttribute("msg","用户名或密码错误");

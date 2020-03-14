@@ -42,8 +42,8 @@ public class RegionController {
       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
       @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize){
 
-    Page<Region> page = PageHelper.startPage(pageNum,pageSize);
     List<Region> regionList = regionService.getRegionList(regionId);
+    Page<Region> page = new Page<>();
     return CommonReturnVO.suc(CommonReturnPageVO.get(page,regionList));
   }
 
